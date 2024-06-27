@@ -1,0 +1,13 @@
+User-Agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-Agent: Applebot
+Allow: /
+Disallow: /api/
+
+User-Agent: Bingbot
+Allow: /
+Disallow: /api/
+
+Sitemap: [object Object]/sitemap.xml

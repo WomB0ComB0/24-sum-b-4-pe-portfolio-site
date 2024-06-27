@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    {% block head %}
+    <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7 lte-ie9"> <![endif]-->
+    <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8 lte-ie9"> <![endif]-->
+    <!--[if IE 8]>         <html class="no-js lt-ie9 lte-ie9"> <![endif]-->
+    <!--[if IE 9]>         <html class="no-js lte-ie9"> <![endif]-->
+    <!--[if gt IE 9]><!-->
+      <html class="no-js" itemscope="itemscope" itemtype="http://schema.org/WebPage" lang="en"
+      xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/"> <!--<![endif]-->
+
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <meta charset="utf-8">
+    <meta name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=5, viewport-fit=cover, user-scalable=yes, interactive-widget=resizes-visual">
+    <meta property="og:title" content="Personal Portfolio">
+    <meta property="og:description" content="My Personal Portfolio">
+    <meta property="og:url" content="{{ url }}">
+    <meta property="og:image" content="{{ url }}/static/pwa/opengraph-image.png">
+    <meta property="og:image:width" content="2560">
+    <meta property="og:image:height" content="1440">
+    <meta name="twitter:title" content="Personal Portfolio">
+    <meta name="twitter:description" content="My Personal Portfolio">
+    <meta name="twitter:url" content="{{ url }}">
+    <meta name="twitter:image" content="{{ url }}/static/pwa/opengraph-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:creator" content="@OdnisMike">
+    <meta name="twitter:image:width" content="2560">
+    <meta name="twitter:image:height" content="1440">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet">
+
+    <link lang='sass' rel="stylesheet" href="./static/styles/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link lang="sass" rel="stylesheet" href="./static/styles/pico/pico.min.css" />
+    <link rel='icon' href='./static/img/favicon.ico' type='image/x-icon' />
+    <title>{{ title }}</title>
+    <link rel="robots" href="./static/pwa/robots.txt">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#560BAD">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#BA9BDD">
+    <meta name="color-scheme" content="dark light">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQB0B714N4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+
+      gtag('config', 'G-TQB0B714N4');
+    </script>
+    <!-- Google Tag Manager -->
+    <script is:inline>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", 'GT-WVJP8SWP');
+    </script>
+    <!-- End Google Tag Manager -->
+    {% endblock %}
+  </head>
+  <body>
+    {% include 'semantics/nav.jinja2' %}
+    <main>
+      {% block main %}
+      {% endblock %}
+    </main>
+    {% include 'semantics/footer.jinja2' %}
+    {% block scripts %}
+      <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker
+            .register('./static/scripts/service-worker.js')
+            .then((registration) => {
+              console.log('scope is: ', registration.scope);
+            })
+            .catch((error) => {
+              console.log('Service worker registration failed: ', error);
+            });
+        }
+      </script>
+      {% block date %}
+        <script>
+          const today = new Date();
+          const year = today.getFullYear();
+          document.getElementById('year').innerHTML = year;
+        </script>
+      {% endblock %}
+    {% endblock %}
+  </body>
+</html>

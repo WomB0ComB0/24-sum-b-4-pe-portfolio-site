@@ -11,11 +11,13 @@ For each of these tasks, you should create an [Issue](https://docs.github.com/en
 *Note: Make sure to include a link to the Issue you're progressing on inside of your Pull Request so your reviewer knows what you're progressing on!*
 
 ### GitHub Tasks
+
 - [x] Create Issues for each task below
 - [x] Progress on each task in a new branch
 - [x] Open a Pull Request when a task is finished to get feedback
 
 ### Portfolio Tasks
+
 - [x] Add a photo of yourself to the website
 - [x] Add an "About youself" section to the website.
 - [x] Add your previous work experiences
@@ -24,11 +26,11 @@ For each of these tasks, you should create an [Issue](https://docs.github.com/en
 - [x] Add a map of all the cool locations/countries you visited
 
 ### Flask Tasks
+
 - [x] Get your Flask app running locally on your machine using the instructions below.
 - [x] Add a template for adding multiple work experiences/education/hobbies using [Jinja](https://jinja.palletsprojects.com/en/3.0.x/api/#basics)
 - [x] Create a new page to display hobbies.
 - [x] Add a menu bar that dynamically displays other pages in the app
-
 
 ## Getting Started
 
@@ -39,9 +41,10 @@ You need to do all your progress here.
 Make sure you have python3 and pip installed
 
 Create and activate virtual environment using virtualenv
+
 ```bash
-$ python -m venv python3-virtualenv
-$ source python3-virtualenv/bin/activate
+python -m venv python3-virtualenv
+source python3-virtualenv/bin/activate
 ```
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install all dependencies!
@@ -55,22 +58,24 @@ pip install -r requirements.txt
 Create a .env file using the example.env template (make a copy using the variables inside of the template)
 
 Start flask development server
+
 ```bash
-$ export FLASK_ENV=development
-$ flask run
+export FLASK_ENV=development
+flask run
 ```
 
 You should get a response like this in the terminal:
-```
+
+```bash
 ❯ flask run
  * Environment: development
  * Debug mode: on
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-You'll now be able to access the website at `localhost:5000` or `127.0.0.1:5000` in the browser! 
+You'll now be able to access the website at `localhost:5000` or `127.0.0.1:5000` in the browser!
 
-*Note: The portfolio site will only work on your local machine while you have it running inside of your terminal. We'll go through how to host it in the cloud in the next few weeks!* 
+*Note: The portfolio site will only work on your local machine while you have it running inside of your terminal. We'll go through how to host it in the cloud in the next few weeks!*
 
 ## Contributing
 

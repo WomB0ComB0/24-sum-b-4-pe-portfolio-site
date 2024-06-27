@@ -1,0 +1,27 @@
+{% extends "../layout.jinja2" %}
+
+{% block main %}
+<nav>
+    <ul>
+      {% for item in menu %}
+      <li class="{{ 'active' if item.active else '' }}">
+        <a href="{{ item.url }}">{{ item.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+</nav>
+<header>
+    <h1>My Hobbies</h1>
+</header>
+<section id="hobbies">
+    <ul>
+      {% for hobby in hobbies %}
+      <li>
+        <h3>{{ hobby.name }}</h3>
+        <img src="{{ url_for('static', filename='images/' ~ hobby.image) }}" alt="{{ hobby.name }}">
+        <p>{{ hobby.description }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+</section>
+{% endblock %}
