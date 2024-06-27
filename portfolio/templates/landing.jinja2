@@ -1,0 +1,32 @@
+{% extends "layout.jinja2" %}
+
+{% block main %}
+<header>
+    <h1>Welcome to My Portfolio</h1>
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Your Photo">
+</header>
+<section id="about">
+    <h2>About Yourself</h2>
+    <p>Write something about yourself here.</p>
+</section>
+<section id="work-experience">
+    <h2>Work Experience</h2>
+    <ul>
+        {% for experience in work_experiences %}
+        <li>{{ experience }}</li>
+        {% endfor %}
+    </ul>
+</section>
+<section id="education">
+    <h2>Education</h2>
+    <ul>
+        {% for education in educations %}
+        <li>{{ education }}</li>
+        {% endfor %}
+    </ul>
+</section>
+<section id="map">
+    <h2>Places I've Visited</h2>
+    <!-- Embed a map here -->
+</section>
+{% endblock %}
