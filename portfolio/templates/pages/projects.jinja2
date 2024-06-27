@@ -1,5 +1,13 @@
-{% extends "../layout.jinja2" %}
+{% extends "layout.jinja2" %}
 
 {% block main %}
-<h1>Projects</h1>
+<h1 class="text-4xl font-bold p-6">Projects</h1>
+<ul class="p-6 space-y-4">
+  {% for project in projects %}
+  <li class="p-4 bg-white rounded shadow">
+    <h3 class="text-xl font-bold">{{ project.name }}</h3>
+    <p class="mt-2">{{ project.description }}</p>
+  </li>
+  {% endfor %}
+</ul>
 {% endblock %}

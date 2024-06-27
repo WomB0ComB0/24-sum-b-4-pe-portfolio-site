@@ -3,10 +3,10 @@
         <p>&copy; <span id="year"></span> MLH Fellow. All rights reserved.</p>
         <nav>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/hobbies">Hobbies</a></li>
-                <li><a href="/projects">Projects</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('hobbies') }}">Hobbies</a></li>
+                <li><a href="{{ url_for('projects') }}">Projects</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
             </ul>
         </nav>
     </div>

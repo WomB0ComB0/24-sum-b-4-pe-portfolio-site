@@ -1,12 +1,12 @@
-{% extends "../layout.jinja2" %}
+{% extends "layout.jinja2" %}
 
 {% block main %}
-<section id="contact">
-    <h2>Contact Me</h2>
-          <form action="{{ url_for('contact') }}" method="POST">
-              <label for="email">Email:</label>
-              <input type="email" id="email" name="email" required>
-              <button type="submit">Submit</button>
-          </form>
+<section id="contact" class="p-6">
+    <h2 class="text-2xl font-semibold">Contact Me</h2>
+    <form action="{{ url_for('contact') }}" method="POST" class="mt-4 space-y-4">
+        <label for="email" class="block text-lg">Email:</label>
+        <input type="email" id="email" name="email" required class="p-2 border rounded w-full">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
+    </form>
 </section>
 {% endblock %}
