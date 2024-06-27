@@ -1,5 +1,6 @@
 import json
 import re
+import os
 from typing import List, Dict
 
 class DataReader:
@@ -19,10 +20,13 @@ class CsvReader(DataReader):
 
 class JsonReader(DataReader):
     def read_data(self) -> List[Dict[str, str]]:
-        with open(self.filename, "r", encoding="utf-8") as file:
-            return json.load(
-                file
-            )
+        try:
+            base_path = os.path.dirname(__file__)
+            file_path = os.path.join(base_path, self.filename)
+            with open(file_path, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return {"error": "File not found"}
 
 class Processor:
     def __init__(self, data_reader: DataReader):

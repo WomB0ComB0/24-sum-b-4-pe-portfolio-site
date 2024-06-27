@@ -44,7 +44,8 @@ def hobbies():
         return jsonify({"message": "Options"})
     elif request.method == "HEAD":
         return jsonify({"message": "Head"})
-    hobbies_data = JsonReader.read_data("static/json/hobbies.json")
+    json_reader = JsonReader("static/json/hobbies.json")
+    hobbies_data = json_reader.read_data()
     return render_template(
         "pages/hobbies.jinja2",
         title="MLH Fellow",
@@ -61,7 +62,8 @@ def projects():
         return jsonify({"message": "Options"})
     elif request.method == "HEAD":
         return jsonify({"message": "Head"})
-    projects_data = JsonReader.read_data("static/json/projects.json")
+    json_reader = JsonReader("static/json/projects.json")
+    projects_data = json_reader.read_data()
     return render_template(
         "pages/projects.jinja2",
         title="MLH Fellow",
@@ -102,7 +104,8 @@ def not_found():
 @check_authentication
 def api_projects() -> str:
     if request.method == "GET":
-        return JsonReader.read_data("static/json/projects.json")
+        json_reader = JsonReader("static/json/projects.json")
+        return json_reader.read_data()
     elif request.method == "POST":
         return jsonify({"message": "Project created"})
     elif request.method == "OPTIONS":
@@ -115,7 +118,8 @@ def api_projects() -> str:
 @check_authentication
 def api_hobbies() -> str:
     if request.method == "GET":
-        return JsonReader.read_data("static/json/hobbies.json")
+        json_reader = JsonReader("static/json/hobbies.json")
+        return json_reader.read_data()
     elif request.method == "POST":
         return jsonify({"message": "Hobby created"})
     elif request.method == "OPTIONS":

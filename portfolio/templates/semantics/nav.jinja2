@@ -1,9 +1,8 @@
 <nav>
     <ul>
-        {% for item in menu %}
-        <li class="{{ 'active' if item.active else '' }}">
-            <a href="{{ item.url }}">{{ item.name }}</a>
-        </li>
-        {% endfor %}
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('hobbies') }}">Hobbies</a></li>
+        <li><a href="{{ url_for('projects') }}">Projects</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
     </ul>
 </nav>

@@ -1,32 +1,38 @@
 {% extends "layout.jinja2" %}
 
 {% block main %}
-<header>
-    <h1>Welcome to My Portfolio</h1>
-    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Your Photo">
+<header class="bg-blue-600 text-white p-6">
+    <h1 class="text-4xl font-bold">Welcome to My Portfolio</h1>
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Your Photo" class="mt-4 rounded-full w-32 h-32">
 </header>
-<section id="about">
-    <h2>About Yourself</h2>
-    <p>Write something about yourself here.</p>
+<section id="about" class="p-6">
+    <h2 class="text-2xl font-semibold">About Yourself</h2>
+    <p class="mt-2">Write something about yourself here.</p>
 </section>
-<section id="work-experience">
-    <h2>Work Experience</h2>
-    <ul>
+<section id="work-experience" class="p-6 bg-gray-100">
+    <h2 class="text-2xl font-semibold">Work Experience</h2>
+    <ul class="mt-4 space-y-4">
         {% for experience in work_experiences %}
-        <li>{{ experience }}</li>
+        <li class="p-4 bg-white rounded shadow">
+            <h3 class="text-xl font-bold">{{ experience.title }}</h3>
+            <p class="mt-2">{{ experience.description }}</p>
+        </li>
         {% endfor %}
     </ul>
 </section>
-<section id="education">
-    <h2>Education</h2>
-    <ul>
+<section id="education" class="p-6">
+    <h2 class="text-2xl font-semibold">Education</h2>
+    <ul class="mt-4 space-y-4">
         {% for education in educations %}
-        <li>{{ education }}</li>
+        <li class="p-4 bg-white rounded shadow">
+            <h3 class="text-xl font-bold">{{ education.degree }}</h3>
+            <p class="mt-2">{{ education.institution }}</p>
+        </li>
         {% endfor %}
     </ul>
 </section>
-<section id="map">
-    <h2>Places I've Visited</h2>
+<section id="map" class="p-6 bg-gray-100">
+    <h2 class="text-2xl font-semibold">Places I've Visited</h2>
     <!-- Embed a map here -->
 </section>
 {% endblock %}

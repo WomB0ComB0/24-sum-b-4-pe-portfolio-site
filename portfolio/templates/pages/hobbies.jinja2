@@ -1,25 +1,16 @@
-{% extends "../layout.jinja2" %}
+{% extends "layout.jinja2" %}
 
 {% block main %}
-<nav>
-    <ul>
-      {% for item in menu %}
-      <li class="{{ 'active' if item.active else '' }}">
-        <a href="{{ item.url }}">{{ item.name }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-</nav>
-<header>
-    <h1>My Hobbies</h1>
+<header class="bg-blue-600 text-white p-6">
+    <h1 class="text-4xl font-bold">My Hobbies</h1>
 </header>
-<section id="hobbies">
-    <ul>
+<section id="hobbies" class="p-6">
+    <ul class="space-y-4">
       {% for hobby in hobbies %}
-      <li>
-        <h3>{{ hobby.name }}</h3>
-        <img src="{{ url_for('static', filename='images/' ~ hobby.image) }}" alt="{{ hobby.name }}">
-        <p>{{ hobby.description }}</p>
+      <li class="p-4 bg-white rounded shadow">
+        <h3 class="text-xl font-bold">{{ hobby.name }}</h3>
+        <img src="{{ url_for('static', filename='images/' ~ hobby.image) }}" alt="{{ hobby.name }}" class="mt-2 rounded w-32 h-32">
+        <p class="mt-2">{{ hobby.description }}</p>
       </li>
       {% endfor %}
     </ul>
