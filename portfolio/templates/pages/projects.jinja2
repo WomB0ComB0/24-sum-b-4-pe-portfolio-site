@@ -2,12 +2,31 @@
 
 {% block main %}
 <h1 class="text-4xl font-bold p-6">Projects</h1>
-<ul class="p-6 space-y-4">
+<div class="github-cards">
   {% for project in projects %}
-  <li class="p-4 bg-white rounded shadow">
-    <h3 class="text-xl font-bold">{{ project.name }}</h3>
-    <p class="mt-2">{{ project.description }}</p>
-  </li>
+  <a href="{{ project.url }}" class="github-card" data-github="{{ project.url | replace('https://github.com/', '') }}">
+    <h3>{{ project.name }}</h3>
+    <p>{{ project.description }}</p>
+    <span class="github-card__meta">
+      <span class="github-card__language-icon" style="color: {% if project.language == 'TypeScript' %}#2b7489{% elif project.language == 'JavaScript' %}#F1E05A{% endif %};">●</span> {{ project.language }}
+    </span>
+    <span class="github-card__meta">
+      <i class="fa fa-star" aria-hidden="true"></i>
+      <span data-stars>
+        <i class="fa fa-spinner" aria-hidden="true"></i>
+      </span>
+    </span>
+    <span class="github-card__meta">
+      <i class="fa fa-code-fork" aria-hidden="true"></i>
+      <span data-forks>
+        <i class="fa fa-spinner" aria-hidden="true"></i>
+      </span>
+    </span>
+  </a>
   {% endfor %}
-</ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='scripts/projects.js') }}"></script>
 {% endblock %}

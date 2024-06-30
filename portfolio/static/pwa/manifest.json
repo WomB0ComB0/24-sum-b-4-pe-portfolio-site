@@ -1,0 +1,65 @@
+{
+  "name": "Mike Odnis",
+  "short_name": "MO",
+  "description": "Mike Odnis is a full-stack developer and designer based in the San Francisco Bay Area. He specializes in building web applications and services.",
+  "categories": [
+    "technology",
+    "web",
+    "development",
+    "design",
+    "art",
+    "music",
+    "writing"
+  ],
+  "lang": "en-US",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "theme_color": "#BA9BDD",
+  "background_color": "#560BAD",
+  "orientation": "portrait-primary",
+  "display_override": [
+    "minimal-ui",
+    "browser",
+    "fullscreen",
+    "window-controls-overlay"
+  ],
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "../svg/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Accessibility",
+      "short_name": "Accessibility",
+      "url": "/legal/accessibility",
+      "description": ".",
+      "icons": [
+        {
+          "src": "/assets/svgs/logo-icon.svg",
+          "type": "image/svg+xml",
+          "purpose": "any",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/images/Screen-shot-wide.png",
+      "sizes": "640x1136",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/Screen-shot-narrow.png",
+      "sizes": "1280x800",
+      "type": "image/png"
+    }
+  ],
+  "prefer_related_applications": false
+}
