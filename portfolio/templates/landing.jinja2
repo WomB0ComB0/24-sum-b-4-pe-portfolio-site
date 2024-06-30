@@ -3,7 +3,7 @@
 {% block main %}
 <header class="bg-blue-600 text-white p-6">
     <h1 class="text-4xl font-bold">Welcome to My Portfolio</h1>
-    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Your Photo" class="mt-4 rounded-full w-32 h-32">
+    <img src="{{ url_for('static', filename='img/header.png') }}" alt="Your Photo" class="mt-4 rounded-full w-32 h-32">
 </header>
 <section id="about" class="p-6">
     <h2 class="text-2xl font-semibold">About Yourself</h2>
@@ -33,6 +33,6 @@
 </section>
 <section id="map" class="p-6 bg-gray-100">
     <h2 class="text-2xl font-semibold">Places I've Visited</h2>
-    <!-- Embed a map here -->
+    {{ sndmap }}
 </section>
 {% endblock %}

@@ -1,0 +1,64 @@
+{
+  "places": [
+    {
+      "name": "Hopper hacks x2",
+      "description": "2x mentor",
+      "lat": 40.73061,
+      "lng": -73.935242
+    },
+    {
+      "name": "SBU hacks",
+      "description": "First hackathon 2022",
+      "lat": 40.916233,
+      "lng": -73.125833
+    },
+    {
+      "name": "Hack Cewit x2",
+      "description": "2x speaker",
+      "lat": 40.9044783,
+      "lng": -73.1363673
+    },
+    {
+      "name": "NYU Hacks",
+      "description": "Mentor and Judge",
+      "lat": 40.6944235,
+      "lng": -73.9968889
+    },
+    {
+      "name": "Treehacks",
+      "description": "Mentor",
+      "lat": 35.652832,
+      "lng": 139.839478
+    },
+    {
+      "name": "Jane street",
+      "description": "Visited as part of a program",
+      "lat": 30.2672,
+      "lng": -97.7431
+    },
+    {
+      "name": "Squarespace",
+      "description": "Got invited to visit ",
+      "lat": 34.052235,
+      "lng": -118.243683
+    },
+    {
+      "name": "Devfest NYC",
+      "description": "Cool event",
+      "lat": 41.8781,
+      "lng": -87.6298
+    },
+    {
+      "name": "GitHub Field day",
+      "description": "I was there in spirit",
+      "lat": 36.1627,
+      "lng": -86.7816
+    },
+    {
+      "name": "Hack Dartmouth",
+      "description": "Hacker",
+      "lat": 43.7037946,
+      "lng": -72.2946593
+    }
+  ]
+}

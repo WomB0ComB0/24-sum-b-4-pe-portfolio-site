@@ -3,10 +3,30 @@
 {% block main %}
 <section id="contact" class="p-6">
     <h2 class="text-2xl font-semibold">Contact Me</h2>
-    <form action="{{ url_for('contact') }}" method="POST" class="mt-4 space-y-4">
+    <form id="contact" onsubmit="return postToMailto();" class="mt-4 space-y-4">
+        <label for="name" class="block text-lg">Name:</label>
+        <input type="text" id="name" name="entry.538960720" data-name="Name" required class="p-2 border rounded w-full">
+
+        <label for="profession" class="block text-lg">Profession:</label>
+        <input type="text" id="profession" name="entry.1780789653" data-name="Profession" required class="p-2 border rounded w-full">
+
+        <label for="company" class="block text-lg">Company:</label>
+        <input type="text" id="company" name="entry.884663504" data-name="Company" required class="p-2 border rounded w-full">
+
         <label for="email" class="block text-lg">Email:</label>
-        <input type="email" id="email" name="email" required class="p-2 border rounded w-full">
+        <input type="email" id="email" name="entry.1948239600" data-name="Email" required class="p-2 border rounded w-full">
+
+        <label for="subject" class="block text-lg">Subject:</label>
+        <input type="text" id="subject" name="entry.1384000823" data-name="Subject" required class="p-2 border rounded w-full">
+
+        <label for="message" class="block text-lg">Message:</label>
+        <textarea id="message" name="entry.711251017" data-name="Message" required class="p-2 border rounded w-full"></textarea>
+
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
     </form>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='scripts/contact.js') }}"></script>
 {% endblock %}
