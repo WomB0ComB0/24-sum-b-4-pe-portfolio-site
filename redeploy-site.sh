@@ -1,5 +1,9 @@
 #!/bin/bash
 
+flask_started=false
+max_retries=1
+retry_count=0
+
 system_check() {
     # Platform check
     case "$(uname)" in
@@ -11,7 +15,7 @@ system_check() {
             if ! command -v dnf &> /dev/null; then
                 echo "dnf command not found"
                 exit 1
-            else 
+            else
                 sudo dnf install lsof
             fi
             if ! command -v sudo &> /dev/null; then
@@ -119,17 +123,40 @@ kill_flask_process || echo "Failed to kill Flask process"
 
 export FLASK_APP=main
 start_flask_server() {
-    tmux new-session -d -s "mike-odnis" 
-    source venv/bin/activate 
-    flask run --host=0.0.0.0 &
+    # Start a new tmux session
+    tmux new-session -d -s "mike-odnis"
+    if [ $? -eq 0 ]; then
+        echo "tmux: New session 'mike-odnis' created"
+    else
+        echo "tmux: Failed to create new session" >&2
+        return 1
+    fi
+
+    # Change directory to the project folder
+    tmux send-keys -t "mike-odnis" "cd 24-sum-b-4-pe-portfolio-site" C-m
+    echo "tmux: Changed directory to 24-sum-b-4-pe-portfolio-site"
+
+    # Activate the virtual environment
+    tmux send-keys -t "mike-odnis" "source venv/bin/activate" C-m
+    echo "tmux: Activated virtual environment"
+
+    # Start the Flask server
+    tmux send-keys -t "mike-odnis" "flask run --host=0.0.0.0" C-m
+    if [ $? -eq 0 ]; then
+        echo "tmux: Flask server started" && flask_started=true
+    else
+        echo "tmux: Failed to start Flask server" >&2
+        tmux send-keys -t "mike-odnis" "exit" C-m
+        echo "Exited tmux session"
+        return 1
+    fi
+
+    # Get the Flask server PID
     flask_pid=$!
     echo "Flask PID: $flask_pid"
+
     sleep 1
 }
-
-max_retries=1
-retry_count=0
-flask_started=false
 
 while [ $retry_count -lt $max_retries ]; do
     start_flask_server
