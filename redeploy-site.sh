@@ -1,4 +1,4 @@
-git fetch && git reset origin/main --hard || exit 1
+git fetch && git reset main --hard || exit 1
 
 case "$(uname)" in
     Darwin)
