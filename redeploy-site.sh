@@ -80,6 +80,7 @@ checks() {
 
     # Install requirements
     if [ -f "requirements.txt" ]; then
+        pip install --upgrade pip
         pip install --no-warn-script-location -q -r requirements.txt
     else
         echo "requirements.txt does not exist"
@@ -143,7 +144,8 @@ start_flask_server() {
     # Start the Flask server
     tmux send-keys -t "mike-odnis" "flask run --host=0.0.0.0" C-m
     if [ $? -eq 0 ]; then
-        echo "tmux: Flask server started" && flask_started=true
+        echo "tmux: Flask server started"
+        flask_started=true
     else
         echo "tmux: Failed to start Flask server" >&2
         tmux send-keys -t "mike-odnis" "exit" C-m
@@ -154,13 +156,10 @@ start_flask_server() {
     # Get the Flask server PID
     flask_pid=$!
     echo "Flask PID: $flask_pid"
-
-    sleep 1
 }
 
 while [ $retry_count -lt $max_retries ]; do
     start_flask_server
-    sleep 1
     if ps -p $flask_pid > /dev/null; then
         echo "Started Testing Flask server"
         flask_started=true
