@@ -1,5 +1,53 @@
 p, h1, h2, h3, h4, h5, h6, button {
-    font-family: "Roboto", serif;
+    font-family: "Inter", "Roboto", serif;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+h6 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: white;
 }
 
 body {
@@ -7,14 +55,25 @@ body {
     background-size: cover;
     width: auto; 
     overflow-x: hidden;
-    font-family: "Roboto", serif;
+    font-family: "Inter", "Roboto", sans-serif;
     margin: 0px;
+    color: white;
+    scroll-behavior: smooth;
 }
+
+.scroll-down > nav {
+	transform: translate3d(0, -100%, 0);
+}
+
+.scroll-up > nav {
+	filter: drop-shadow(0 -10px 20px rgb(170, 170, 170));
+}
+
 
 .nav-bar {
     width: 100%;
     display: inline-block;
-    background-color: #1C539F;
+    background-color: #4B0082;
     font-family: "Roboto", serif;
     font-weight: 700 !important;
     padding-top: 10px;
@@ -50,7 +109,7 @@ body {
 }
 
 .profile {
-    background-color: #1d539f !important;
+    background-color: #4B0082 !important;
     text-align: center;
     height: 320px;
     margin-bottom: 50px;
@@ -80,7 +139,7 @@ body {
 .banner {
     padding: 20px 0px 50px 0px;
     height: 150px;
-    background-color: #1d539f;
+    background-color: #4B0082;
 }
 
 .banner .logo {
@@ -99,4 +158,263 @@ body {
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
+}
+
+.place-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.place-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.place-card h3 {
+    color: #333;
+}
+
+.place-card p {
+    color: #666;
+}
+
+.place-card a {
+    color: #4B0082;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.place-card a:hover {
+    text-decoration: underline;
+}
+
+.github-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.github-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.github-card h3 {
+    color: #333;
+}
+
+.github-card p {
+    color: #666;
+}
+
+.github-card__meta {
+    color: #999;
+}
+
+.github-card__language-icon {
+    font-size: 1.2em;
+}
+
+.github-card__meta i {
+    color: #ffcc00;
+}
+
+.github-card__meta span[data-stars],
+.github-card__meta span[data-forks] {
+    display: inline-block;
+    width: 1.5em;
+    text-align: center;
+}
+
+#maparea { 
+    height: 500px; 
+    width: 100%;
+    margin: auto;
+}
+
+.leaflet-marker-icon {
+    background-color: transparent;
+}
+
+.footer-content {
+    max-width: 1556px;
+    margin-inline: auto;
+    padding-block: 2em;
+    padding-inline: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+.education-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.education-card .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: transparent;
+}
+
+.education-card picture {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.education-card .details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.education-card .education-description {
+    flex: 1;
+    width: 100%;
+}
+
+.education-card .education-skills {
+    list-style: none !important;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.education-card .education-skills li {
+    padding: 0.25em 0.5em;
+}
+
+@media (min-width: 1024px) {
+    .work-card .header {
+        flex-direction: row;
+    }
+
+    .education-card .header {
+        flex-direction: row;
+    }
+
+    .education-card picture,
+    .education-card .details {
+        width: auto;
+    }
+}
+
+.education-skills li {
+    font-size: 0.875rem;
+    padding: 0.25em 0.5em;
+}
+
+.education-description {
+    padding: 1em;
+    word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .education-description {
+        padding: 0.5em;
+    }
+}
+
+.work-experience-scroller {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+}
+
+.work-card {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 200px;
+    max-width: 500px;
+    min-height: 300px;
+    max-height: 900px;
+    margin-right: 1rem;
+}
+
+@media (max-width: 640px) {
+    .work-card {
+        min-width: 100%;
+        margin-right: 0;
+    }
+}
+
+.work-card .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: transparent;
+}
+
+.work-experience-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.work-experience-scroller {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.education-scroller {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+}
+
+.education-card {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    min-width: 200px;
+    margin-right: 1rem;
+    padding: 1rem;
+}
+
+.education-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.education-scroller {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.about-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 1024px) {
+    .about-content {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+#navbar {
+    transition: transform 0.3s ease-in-out;
 }

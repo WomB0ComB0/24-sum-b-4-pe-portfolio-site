@@ -1,27 +1,31 @@
 {% extends "layout.jinja2" %}
 
 {% block main %}
-<h1 class="text-4xl font-bold p-6">Projects</h1>
-<div class="github-cards">
+<header class="text-white max-w-[1556px] mx-auto rounded-lg">
+  <h1 class="text-4xl font-bold text-white py-8">Projects</h1>
+</header>
+<div class="github-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
   {% for project in projects %}
-  <a href="{{ project.url }}" class="github-card" data-github="{{ project.url | replace('https://github.com/', '') }}">
-    <h3>{{ project.name }}</h3>
-    <p>{{ project.description }}</p>
-    <span class="github-card__meta">
-      <span class="github-card__language-icon" style="color: {% if project.language == 'TypeScript' %}#2b7489{% elif project.language == 'JavaScript' %}#F1E05A{% endif %};">●</span> {{ project.language }}
+  <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer" class="github-card p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-300" data-github="{{ project.url | replace('https://github.com/', '') }}">
+    <h3 class="text-xl font-bold">{{ project.name }}</h3>
+    <p class="mt-2 text-gray-600">{{ project.description }}</p>
+    <span class="github-card__meta flex items-center mt-2">
+      <span class="github-card__language-icon mr-2" style="color: {% if project.language == 'TypeScript' %}#2b7489{% elif project.language == 'JavaScript' %}#F1E05A{% endif %};">●</span> {{ project.language }}
     </span>
-    <span class="github-card__meta">
-      <i class="fa fa-star" aria-hidden="true"></i>
-      <span data-stars>
-        <i class="fa fa-spinner" aria-hidden="true"></i>
-      </span>
-    </span>
-    <span class="github-card__meta">
-      <i class="fa fa-code-fork" aria-hidden="true"></i>
-      <span data-forks>
-        <i class="fa fa-spinner" aria-hidden="true"></i>
-      </span>
-    </span>
+    <ul class="list-none flex flex-row gap-4">
+      <li class="github-card__meta flex items-center mt-2">
+        <i class="fa fa-star mr-1" aria-hidden="true"></i>
+          <span data-stars>
+            <i class="fa fa-spinner" aria-hidden="true"></i>
+          </span>
+      </li>
+      <li class="github-card__meta flex items-center mt-2">
+          <i class="fa fa-code-fork mr-1" aria-hidden="true"></i>
+        <span data-forks>
+          <i class="fa fa-spinner" aria-hidden="true"></i>
+          </span>
+      </li>
+    </ul>
   </a>
   {% endfor %}
 </div>

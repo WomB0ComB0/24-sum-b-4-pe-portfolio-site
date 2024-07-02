@@ -4,9 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }}</title>
+  <link lang="sass" rel="stylesheet" href="./static/styles/pico/pico.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #BA9BDD;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      font-size: 6rem;
+      margin: 0;
+    }
+    p {
+      font-size: 1.5rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #560BAD;
+        color: #f8f9fa;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>404</h1>
-  <p>The page you are looking for does not exist.</p>
+  <div class="container">
+    <h1>404</h1>
+    <p>The page you are looking for does not exist.</p>
+    <button onclick="window.history.back()" class="text-white bg-violet-800 ">Go back to the homepage</button>
+  </div>
 </body>
 </html>

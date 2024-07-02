@@ -1,16 +1,24 @@
 {% extends "layout.jinja2" %}
 
 {% block main %}
-<header class="bg-blue-600 text-white p-6">
-    <h1 class="text-4xl font-bold">My Hobbies</h1>
+<header class="text-white max-w-[1556px] mx-auto rounded-lg">
+  <h1 class="text-4xl font-bold text-white py-8">My Hobbies</h1>
 </header>
-<section id="hobbies" class="p-6">
-    <ul class="space-y-4">
+<section id="hobbies" class="p-6 rounded-lg">
+    <ul class="space-y-4 list-none">
       {% for hobby in hobbies %}
       <li class="p-4 bg-white rounded shadow">
-        <h3 class="text-xl font-bold">{{ hobby.name }}</h3>
-        <img src="{{ url_for('static', filename='images/' ~ hobby.image) }}" alt="{{ hobby.name }}" class="mt-2 rounded w-32 h-32">
-        <p class="mt-2">{{ hobby.description }}</p>
+        <h3 class="text-xl font-bold text-black">{{ hobby.name }}</h3>
+        {% set ext = hobby.image.split('.')[-1].lower() %}
+        {% if ext in ['png', 'jpg', 'webp'] %}
+          <img src="{{ hobby.image }}" alt="{{ hobby.name }}" class="mt-2 rounded w-32 h-32">
+        {% else %}
+          <video controls class="mt-2 rounded w-32 h-32">
+            <source src="{{ hobby.image }}" type="video/{{ ext }}">
+            Your browser does not support the video tag.
+          </video>
+        {% endif %}
+        <p class="mt-2 text-black">{{ hobby.description }}</p>
       </li>
       {% endfor %}
     </ul>

@@ -1,38 +1,28 @@
 {% extends "layout.jinja2" %}
 
 {% block main %}
-<header class="bg-blue-600 text-white p-6">
-    <h1 class="text-4xl font-bold">Welcome to My Portfolio</h1>
-    <img src="{{ url_for('static', filename='img/header.png') }}" alt="Your Photo" class="mt-4 rounded-full w-32 h-32">
+<header class="text-white max-w-[1556px] mx-auto rounded-lg">
+    <picture
+        class="
+            h-[300px]
+            w-[100dvw]
+            rounded-lg
+        "
+    >   
+        <source srcset="{{ url_for('static', filename='pwa/opengraph-image.png') }}" type="image/png">
+        <img src="{{ url_for('static', filename='pwa/opengraph-image.png') }}" alt="Your Photo" class="mt-4 w-full h-full rounded-lg">
+    </picture>
 </header>
-<section id="about" class="p-6">
-    <h2 class="text-2xl font-semibold">About Yourself</h2>
-    <p class="mt-2">Write something about yourself here.</p>
-</section>
-<section id="work-experience" class="p-6 bg-gray-100">
-    <h2 class="text-2xl font-semibold">Work Experience</h2>
-    <ul class="mt-4 space-y-4">
-        {% for experience in work_experiences %}
-        <li class="p-4 bg-white rounded shadow">
-            <h3 class="text-xl font-bold">{{ experience.title }}</h3>
-            <p class="mt-2">{{ experience.description }}</p>
-        </li>
-        {% endfor %}
-    </ul>
-</section>
-<section id="education" class="p-6">
-    <h2 class="text-2xl font-semibold">Education</h2>
-    <ul class="mt-4 space-y-4">
-        {% for education in educations %}
-        <li class="p-4 bg-white rounded shadow">
-            <h3 class="text-xl font-bold">{{ education.degree }}</h3>
-            <p class="mt-2">{{ education.institution }}</p>
-        </li>
-        {% endfor %}
-    </ul>
-</section>
-<section id="map" class="p-6 bg-gray-100">
-    <h2 class="text-2xl font-semibold">Places I've Visited</h2>
-    {{ sndmap }}
-</section>
+<main class="space-y-10">
+    {% include 'views/about.jinja2' %}
+    {% include 'views/work_experience.jinja2' %}
+    {% include 'views/education.jinja2' %}
+    {% include 'views/map.jinja2' %}
+</main>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
 {% endblock %}

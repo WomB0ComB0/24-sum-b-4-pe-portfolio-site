@@ -1,0 +1,10 @@
+<section id="about" class="p-6 rounded-lg ">
+    <h2 class="text-2xl font-semibold text-white">About Me</h2>
+    <div class="about-content relative flex flex-col items-center  mx-auto text-center md:text-left md:flex-row max-w-7xl justify-evenly gap-5">
+        <picture class="flex-shrink-0 object-cover w-56 h-56 rounded-full md:mb-0 md:rounded-lg md:w-64 md-h-95 xl:w-[500px] xl:h-[600px] mt-4">
+            <source srcset="{{ url_for('static', filename=about.image) }}" type="image/webp" controls>
+            <img src="{{ url_for('static', filename=about.image) }}" alt="Your Photo" class="flex-shrink-0 object-cover w-56 h-56 rounded-full md:mb-0 md:rounded-lg md:w-64 md-h-95 xl:w-[500px] xl:h-[600px]">
+        </picture>
+        <p class="text-base leading-6 lg:text-lg xl:text-xl mt-2 text-white">{{ about.description }}</p>
+    </div>
+</section>

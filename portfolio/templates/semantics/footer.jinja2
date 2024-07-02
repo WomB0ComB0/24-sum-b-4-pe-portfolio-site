@@ -1,13 +1,14 @@
 <footer>
-    <div class="footer-content">
-        <p>&copy; <span id="year"></span> MLH Fellow. All rights reserved.</p>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('hobbies') }}">Hobbies</a></li>
-                <li><a href="{{ url_for('projects') }}">Projects</a></li>
-                <li><a href="{{ url_for('contact') }}">Contact</a></li>
-            </ul>
-        </nav>
+    <div class="footer-content text-white">
+        <p class="text-white">&copy; <span id="year"></span> Mike Odnis. All rights reserved.</p>
+        <p class="text-white">Made with 💜 by <a class="underline underline-offset-4"  href="https://github.com/WomB0ComB0">Mike Odis</a></p>
     </div>
 </footer>
+
+{% block scripts %}
+<script>
+    const today = new Date();
+    const year = today.getFullYear();
+    document.getElementById('year').innerHTML = year;
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@ import requests
 from dotenv import load_dotenv
 from flask import request, jsonify, render_template, current_app as app, g
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
-from portfolio.utils import ContactForm
+from portfolio.utils import ContactForm, JsonReader
 from portfolio.auth import check_authentication
 from portfolio.db import Database
 import sqlite3
@@ -74,8 +74,21 @@ def index():
     menu = active_menu(nav_menu, request.url)
     if request.method == "OPTIONS":
         return jsonify({"message": "GET, OPTIONS"})
+
+    places_reader = JsonReader("static/json/places.json")
+    places_data = places_reader.read_data()["places"]
+    educations = JsonReader("static/json/education.json").read_data()["education"]
+    work_experiences = JsonReader("static/json/work.json").read_data()["work"]
+    about = JsonReader("static/json/about.json").read_data()["about"]
+
     return render_template(
-        "landing.jinja2", title="MLH Fellow", url=os.getenv("URL"), menu=menu
+        "landing.jinja2",
+        url=os.getenv("URL"),
+        menu=menu,
+        about=about,
+        places=places_data,
+        educations=educations,
+        work_experiences=work_experiences,
     )
 
 
@@ -87,7 +100,7 @@ def hobbies():
     hobbies_data = connect.read_data("hobbies", ["name", "description", "image"])
     return render_template(
         "pages/hobbies.jinja2",
-        title="MLH Fellow",
+        title="Hobbies",
         url=os.getenv("URL"),
         menu=menu,
         hobbies=hobbies_data,
@@ -107,7 +120,7 @@ def projects():
     projects_data = response.json()["projects"]
     return render_template(
         "pages/projects.jinja2",
-        title="MLH Fellow",
+        title="Projects",
         url=os.getenv("URL"),
         menu=menu,
         projects=projects_data,
@@ -134,15 +147,15 @@ def contact():
     elif request.method == "OPTIONS":
         return jsonify({"message": "Options"})
     return render_template(
-        "pages/contact.jinja2", title="MLH Fellow", url=os.getenv("URL"), menu=menu
+        "pages/contact.jinja2", title="Contact", url=os.getenv("URL"), menu=menu
     )
 
 
-@app.route("/*", methods=["GET", "OPTIONS"])
-def not_found():
+@app.errorhandler(404)
+def not_found(e):
     menu = active_menu(nav_menu, request.url)
     return render_template(
-        "client/404.jinja2", title="MLH Fellow", url=os.getenv("URL"), menu=menu
+        "client/404.jinja2", title="404", url=os.getenv("URL"), menu=menu
     )
 
 
