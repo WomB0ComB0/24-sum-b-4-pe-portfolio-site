@@ -8,4 +8,3 @@ def create_app():
         from portfolio import routes
         
         return app
-    

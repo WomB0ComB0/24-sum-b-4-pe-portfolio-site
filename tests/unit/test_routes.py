@@ -1,0 +1,108 @@
+import unittest
+import os
+from flask import g
+from portfolio import create_app
+from portfolio.db import Database
+from portfolio.schemas import ProjectsSchema, HobbiesSchema
+from dotenv import load_dotenv
+import requests_mock
+
+load_dotenv()
+
+os.environ["FLASK_APP"] = "main"
+root_path = os.path.dirname(os.path.abspath(__file__))
+
+class TestRoutes(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.app = create_app()
+        cls.app.config.update({
+            "TESTING": True,
+        })
+        with cls.app.app_context():
+            g.db = Database(os.path.join(root_path, "test_portfolio.db"))
+            g.db.create_table(
+                "projects",
+                ProjectsSchema(
+                    name="",
+                    description="",
+                    url="",
+                    language="",
+                ).json(),
+            )
+            g.db.create_table(
+                "hobbies",
+                HobbiesSchema(
+                    name="",
+                    description="",
+                    image="",
+                ).json(),
+            )
+        cls.client = cls.app.test_client()
+
+    @classmethod
+    def tearDownClass(cls):
+        with cls.app.app_context():
+            if hasattr(g, "db"):
+                g.db.close_connection()
+
+    def test_index_route(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Home', response.data)
+
+    def test_hobbies_route(self):
+        response = self.client.get('/hobbies')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Hobbies', response.data)
+
+    @requests_mock.Mocker()
+    def test_projects_route(self, mocker):
+        mocker.get('http://localhost/api/v1/projects', json={"projects": []})
+        response = self.client.get('/projects', headers={"Authorization": f"{os.getenv("TOKEN")}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Projects', response.data)
+
+    def test_contact_get_route(self):
+        response = self.client.get('/contact')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Contact', response.data)
+
+    def test_contact_post_route(self):
+        response = self.client.post('/contact', data={
+            "name": "John Doe",
+            "profession": "Developer",
+            "company": "Tech Inc.",
+            "email": "john@example.com",
+            "subject": "Hello",
+            "message": "This is a test message."
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Form submitted successfully', response.data)
+
+    @requests_mock.Mocker()
+    def test_api_projects_get_route(self, mocker):
+        mocker.get(
+            'http://localhost:5000/api/v1/projects',
+            json={"projects": []},
+            request_headers={"Authorization": f"{os.getenv("TOKEN")}"}
+        )
+        response = self.client.get(
+            '/api/v1/projects', headers={"Authorization": f"{os.getenv("TOKEN")}"}
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @requests_mock.Mocker()
+    def test_api_hobbies_get_route(self, mocker):
+        mocker.get(
+            'http://localhost:5000/api/v1/hobbies',
+            json={"hobbies": []},
+            request_headers={"Authorization": f"{os.getenv("TOKEN")}"}
+        )
+        response = self.client.get(
+            '/api/v1/hobbies', headers={"Authorization": f"{os.getenv("TOKEN")}"}
+        )
+        self.assertEqual(response.status_code, 200)
+
+if __name__ == '__main__':
+    unittest.main()

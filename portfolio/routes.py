@@ -189,7 +189,7 @@ def api_projects() -> str:
     elif request.method == "PUT":
         try:
             data = request.json
-            db.update_data("projects", data)
+            db.update_data("projects", data, where_condition={"name": data["name"]})
             return jsonify({"message": "Project updated successfully"})
         except sqlite3.DatabaseError as e:
             return jsonify({"error": str(e)}), 500
@@ -231,7 +231,7 @@ def api_hobbies() -> str:
     elif request.method == "PUT":
         try:
             data = request.json
-            db.update_data("hobbies", data)
+            db.update_data("hobbies", data, where_condition={"name": data["name"]})
             return jsonify({"message": "Hobby updated successfully"})
         except sqlite3.DatabaseError as e:
             return jsonify({"error": str(e)}), 500

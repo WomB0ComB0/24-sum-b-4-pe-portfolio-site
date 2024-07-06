@@ -169,6 +169,7 @@ while [ $retry_count -lt $max_retries ]; do
     fi
 done
 
+tmux send-keys -t "mike-odnis" "./run-tests.sh" C-m
 
 end_time=$(date +%s)
 elapsed=$((end_time - start_time))

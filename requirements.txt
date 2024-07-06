@@ -13,3 +13,8 @@ Werkzeug
 requests==2.32.2
 db-sqlite3
 pydantic
+pydantic[email]
+pytest
+pytest-flask
+pytest-mock
+requests-mock
