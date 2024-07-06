@@ -37,7 +37,7 @@ system_check() {
     esac
 }
 
-clean_evnironment() {
+clean_environment() {
     # Install tmux if not installed
     if ! command -v tmux &> /dev/null; then
         sudo dnf install -y tmux
@@ -51,7 +51,6 @@ clean_evnironment() {
     # Fetch latest changes from GitHub main branch
     git fetch && git reset origin/main --hard || echo "Failed to fetch and reset origin/main"
 }
-
 
 checks() {
     # Check if pip is installed, if not, install it
@@ -98,19 +97,34 @@ checks() {
     fi
 }
 
+run_tests() {
+    # Run the unittest command and capture the output and exit code
+    output=$(python -m unittest discover -s tests/unit -p "test_*.py" 2>&1)
+    exit_code=$?
+
+    # Check if the tests passed or failed
+    if [ $exit_code -eq 0 ]; then
+        echo "Tests passed successfully!"
+        rm tests/unit/test_portfolio.db
+        echo "$output"
+    else
+        echo "Tests failed."
+        echo "$output"
+        exit $exit_code
+    fi
+}
 
 main() {
     start_time=$(date +%s)
     system_check || echo "System check failed"
-    clean_evnironment || echo "Failed to clean environment"
+    clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
+    run_tests || echo "Tests failed"
     end_time=$(date +%s)
     echo "Time taken to run main(): $((end_time - start_time)) seconds"
 }
 
-
 main || echo "Failed to run main()"
-
 
 start_time=$(date +%s)
 kill_flask_process() {
@@ -118,7 +132,6 @@ kill_flask_process() {
         kill -9 $(lsof -ti:5000) || echo "Failed to kill Flask process"
     fi
 }
-
 
 kill_flask_process || echo "Failed to kill Flask process"
 
@@ -169,18 +182,15 @@ while [ $retry_count -lt $max_retries ]; do
     fi
 done
 
-tmux send-keys -t "mike-odnis" "./run-tests.sh" C-m
-
 end_time=$(date +%s)
 elapsed=$((end_time - start_time))
 
-
 if ! $flask_started; then
-    echo "Failed CI Pipline. could not start Testing Flask server."
+    echo "Failed CI Pipeline. could not start Testing Flask server."
     echo "CI Pipeline Execution time: $elapsed seconds"
     exit 1
 else
-    echo "Site passed CI Pipline!"
+    echo "Site passed CI Pipeline!"
     kill_flask_process
     echo "CI Pipeline Execution time: $elapsed seconds"
     exit 0
