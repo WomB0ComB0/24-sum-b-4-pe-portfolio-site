@@ -59,7 +59,7 @@ class TestRoutes(unittest.TestCase):
     @requests_mock.Mocker()
     def test_projects_route(self, mocker):
         mocker.get('http://localhost/api/v1/projects', json={"projects": []})
-        response = self.client.get('/projects', headers={"Authorization": f"{os.getenv("TOKEN")}"})
+        response = self.client.get('/projects', headers={"Authorization": f'{os.getenv("TOKEN")}'})
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Projects', response.data)
 
@@ -85,10 +85,10 @@ class TestRoutes(unittest.TestCase):
         mocker.get(
             'http://localhost:5000/api/v1/projects',
             json={"projects": []},
-            request_headers={"Authorization": f"{os.getenv("TOKEN")}"}
+            request_headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
         response = self.client.get(
-            '/api/v1/projects', headers={"Authorization": f"{os.getenv("TOKEN")}"}
+            '/api/v1/projects', headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -97,10 +97,10 @@ class TestRoutes(unittest.TestCase):
         mocker.get(
             'http://localhost:5000/api/v1/hobbies',
             json={"hobbies": []},
-            request_headers={"Authorization": f"{os.getenv("TOKEN")}"}
+            request_headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
         response = self.client.get(
-            '/api/v1/hobbies', headers={"Authorization": f"{os.getenv("TOKEN")}"}
+            '/api/v1/hobbies', headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
         self.assertEqual(response.status_code, 200)
 
