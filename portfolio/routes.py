@@ -2,55 +2,56 @@ from typing import List, Dict
 import os
 import requests
 from dotenv import load_dotenv
-from flask import request, jsonify, render_template, current_app as app, g
-from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
+from flask import request, jsonify, render_template, current_app as app
+from portfolio.schemas import SchemaType
 from portfolio.utils import ContactForm, JsonReader
 from portfolio.auth import check_authentication
-from portfolio.db import Database
-import sqlite3
+# from portfolio.db import Database
+from portfolio.mysql_db import Projects, Hobbies
+# import sqlite3
 from pydantic import ValidationError
 
 load_dotenv()
 base_path = os.path.dirname(os.path.abspath(__file__))
 root_path = os.path.dirname(base_path)
-
-def get_db():
-    if "db" not in g:
-        g.db = Database(os.path.join(root_path, "portfolio.db"))
-    return g.db
-
-
-@app.teardown_appcontext
-def close_db(_error):
-    try:
-        print("Closing database connection")
-        db = g.pop("db", None)
-        if db is not None:
-            db.close_connection()
-    except Exception as e:
-        print(f"Error closing database connection: {e}")
-        raise e
+from peewee import DatabaseError
+# def get_db():
+#     if "db" not in g:
+#         g.db = Database(os.path.join(root_path, "portfolio.db"))
+#     return g.db
 
 
-connect = get_db()
-connect.create_table(
-    "projects",
-    ProjectsSchema(
-        name="",
-        description="",
-        url="",
-        language="",
-    ).json(),
-)
+# @app.teardown_appcontext
+# def close_db(_error):
+#     try:
+#         print("Closing database connection")
+#         db = g.pop("db", None)
+#         if db is not None:
+#             db.close_connection()
+#     except Exception as e:
+#         print(f"Error closing database connection: {e}")
+#         raise e
 
-connect.create_table(
-    "hobbies",
-    HobbiesSchema(
-        name="",
-        description="",
-        image="",
-    ).json(),
-)
+
+# connect = get_db()
+# connect.create_table(
+#     "projects",
+#     ProjectsSchema(
+#         name="",
+#         description="",
+#         url="",
+#         language="",
+#     ).json(),
+# )
+
+# connect.create_table(
+#     "hobbies",
+#     HobbiesSchema(
+#         name="",
+#         description="",
+#         image="",
+#     ).json(),
+# )
 
 nav_menu: List[Dict[str, str]] = [
     {"name": "Home", "url": "/"},
@@ -71,12 +72,12 @@ def active_menu(menu: List[Dict[str, str]], url: str) -> str:
 
 @app.route("/", methods=["GET", "OPTIONS"])
 def index():
+    # print(request.url)
     menu = active_menu(nav_menu, request.url)
     if request.method == "OPTIONS":
         return jsonify({"message": "GET, OPTIONS"})
 
-    places_reader = JsonReader("static/json/places.json")
-    places_data = places_reader.read_data()["places"]
+    places_data = JsonReader("static/json/places.json").read_data()["places"]
     educations = JsonReader("static/json/education.json").read_data()["education"]
     work_experiences = JsonReader("static/json/work.json").read_data()["work"]
     about = JsonReader("static/json/about.json").read_data()["about"]
@@ -97,7 +98,12 @@ def hobbies():
     menu = active_menu(nav_menu, request.url)
     if request.method == "OPTIONS":
         return jsonify({"message": "Options"})
-    hobbies_data = connect.read_data("hobbies", ["name", "description", "image"])
+    response = requests.get(
+        f"{request.url_root}api/v1/{SchemaType.HOBBIES.value}",
+        timeout=10,
+        headers={"Authorization": f"{os.getenv('TOKEN')}"},
+    )
+    hobbies_data = response.json()["hobbies"]
     return render_template(
         "pages/hobbies.jinja2",
         title="Hobbies",
@@ -166,39 +172,36 @@ def not_found(e):
 )
 @check_authentication
 def api_projects() -> str:
-    db = get_db()
     if request.method == "GET":
         try:
-            projects_data = db.read_data(
-                "projects", ["name", "description", "url", "language"]
-            )
+            projects_data = Projects.select()
             return jsonify({"projects": projects_data})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
             data = request.json
             if isinstance(data, list):
                 for item in data:
-                    db.insert_data("projects", item)
+                    Projects.create(**item)
             else:
-                db.insert_data("projects", data)
+                Projects.create(**data)
             return jsonify({"message": "Projects added successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
             data = request.json
-            db.update_data("projects", data, where_condition={"name": data["name"]})
+            Projects.update(**data).where(Projects.name == data["name"]).execute()
             return jsonify({"message": "Project updated successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
             data = request.json
-            db.delete_data("projects", data)
+            Projects.delete().where(Projects.name == data["name"]).execute()
             return jsonify({"message": "Project deleted successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
@@ -210,37 +213,36 @@ def api_projects() -> str:
 )
 @check_authentication
 def api_hobbies() -> str:
-    db = get_db()
     if request.method == "GET":
         try:
-            hobbies_data = db.read_data("hobbies", ["name", "description", "image"])
+            hobbies_data = Hobbies.select()
             return jsonify({"hobbies": hobbies_data})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
             data = request.json
             if isinstance(data, list):
                 for item in data:
-                    db.insert_data("hobbies", item)
+                    Hobbies.create(**item)
             else:
-                db.insert_data("hobbies", data)
+                Hobbies.create(**data)
             return jsonify({"message": "Hobbies added successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
             data = request.json
-            db.update_data("hobbies", data, where_condition={"name": data["name"]})
+            Hobbies.update(**data).where(Hobbies.name == data["name"]).execute()
             return jsonify({"message": "Hobby updated successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
             data = request.json
-            db.delete_data("hobbies", data)
+            Hobbies.delete().where(Hobbies.name == data["name"]).execute()
             return jsonify({"message": "Hobby deleted successfully"})
-        except sqlite3.DatabaseError as e:
+        except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})

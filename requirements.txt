@@ -18,3 +18,4 @@ pytest
 pytest-flask
 pytest-mock
 requests-mock
+peewee==3.14.10

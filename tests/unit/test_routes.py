@@ -2,8 +2,8 @@ import unittest
 import os
 from flask import g
 from portfolio import create_app
-from portfolio.db import Database
-from portfolio.schemas import ProjectsSchema, HobbiesSchema
+from portfolio.db import mydb
+from portfolio.mysql_db import Projects, Hobbies
 from dotenv import load_dotenv
 import requests_mock
 
@@ -20,31 +20,17 @@ class TestRoutes(unittest.TestCase):
             "TESTING": True,
         })
         with cls.app.app_context():
-            g.db = Database(os.path.join(root_path, "test_portfolio.db"))
-            g.db.create_table(
-                "projects",
-                ProjectsSchema(
-                    name="",
-                    description="",
-                    url="",
-                    language="",
-                ).json(),
-            )
-            g.db.create_table(
-                "hobbies",
-                HobbiesSchema(
-                    name="",
-                    description="",
-                    image="",
-                ).json(),
-            )
+            mydb.connect()
+            mydb.create_tables([Projects, Hobbies])
+            mydb.close()
         cls.client = cls.app.test_client()
 
     @classmethod
     def tearDownClass(cls):
         with cls.app.app_context():
-            if hasattr(g, "db"):
-                g.db.close_connection()
+            mydb.connect()
+            mydb.drop_tables([Projects, Hobbies])
+            mydb.close()
 
     def test_index_route(self):
         response = self.client.get('/')
@@ -52,7 +38,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIn(b'Home', response.data)
 
     def test_hobbies_route(self):
-        response = self.client.get('/hobbies')
+        response = self.client.get('/hobbies', headers={"Authorization": f'{os.getenv("TOKEN")}'})
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Hobbies', response.data)
 

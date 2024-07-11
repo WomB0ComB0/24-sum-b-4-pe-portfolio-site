@@ -1,7 +1,19 @@
 from flask import g
+import os
 import sqlite3
 from typing import Dict, List
+from peewee import MySQLDatabase
+from dotenv import load_dotenv
 
+load_dotenv(dotenv_path=".env")
+
+mydb = MySQLDatabase(
+    os.getenv("MYSQL_DATABASE"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    host=os.getenv("MYSQL_HOST"),
+    port=3306,
+)
 class Database:
     def __init__(self, db_path: str):
         self.db_path = db_path
