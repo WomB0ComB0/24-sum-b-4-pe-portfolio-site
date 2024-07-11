@@ -22,4 +22,13 @@ class Projects(Model):
     
     class Meta:
       database = mydb
-      
+
+class Timeline(Model):
+    title = CharField()
+    description = TextField()
+    date = DateTimeField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+    updated_at = DateTimeField(default=datetime.datetime.now)
+    
+    class Meta:
+      database = mydb

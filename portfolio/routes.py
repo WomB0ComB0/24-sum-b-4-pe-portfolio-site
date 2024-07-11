@@ -6,8 +6,10 @@ from flask import request, jsonify, render_template, current_app as app
 from portfolio.schemas import SchemaType
 from portfolio.utils import ContactForm, JsonReader
 from portfolio.auth import check_authentication
+
 # from portfolio.db import Database
-from portfolio.mysql_db import Projects, Hobbies
+from portfolio.mysql_db import Projects, Hobbies, Timeline
+
 # import sqlite3
 from pydantic import ValidationError
 
@@ -15,6 +17,7 @@ load_dotenv()
 base_path = os.path.dirname(os.path.abspath(__file__))
 root_path = os.path.dirname(base_path)
 from peewee import DatabaseError
+
 # def get_db():
 #     if "db" not in g:
 #         g.db = Database(os.path.join(root_path, "portfolio.db"))
@@ -57,6 +60,7 @@ nav_menu: List[Dict[str, str]] = [
     {"name": "Home", "url": "/"},
     {"name": "Hobbies", "url": f"/{SchemaType.HOBBIES.value}"},
     {"name": "Projects", "url": f"/{SchemaType.PROJECTS.value}"},
+    {"name": "Timeline", "url": "/timeline"},
     {"name": "Contact", "url": "/contact"},
 ]
 
@@ -133,6 +137,26 @@ def projects():
     )
 
 
+@app.route("/timeline", methods=["GET", "OPTIONS"])
+def timeline():
+    menu = active_menu(nav_menu, request.url)
+    if request.method == "OPTIONS":
+        return jsonify({"message": "GET, OPTIONS"})
+    response = requests.get(
+        f"{request.url_root}api/v1/{SchemaType.TIMELINE.value}",
+        timeout=10,
+        headers={"Authorization": f"{os.getenv('TOKEN')}"},
+    )
+    timeline_data = response.json()["timeline"]
+    return render_template(
+        "pages/timeline.jinja2",
+        title="Timeline",
+        url=os.getenv("URL"),
+        menu=menu,
+        timeline=timeline_data,
+    )
+
+
 @app.route("/contact", methods=["GET", "POST", "OPTIONS"])
 def contact():
     menu = active_menu(nav_menu, request.url)
@@ -144,7 +168,7 @@ def contact():
                 company=request.form.get("company"),
                 email=request.form.get("email"),
                 subject=request.form.get("subject"),
-                message=request.form.get("message")
+                message=request.form.get("message"),
             )
             print(form_data)
             return jsonify({"message": "Form submitted successfully"})
@@ -242,6 +266,40 @@ def api_hobbies() -> str:
             data = request.json
             Hobbies.delete().where(Hobbies.name == data["name"]).execute()
             return jsonify({"message": "Hobby deleted successfully"})
+        except DatabaseError as e:
+            return jsonify({"error": str(e)}), 500
+    elif request.method == "OPTIONS":
+        return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
+
+
+@app.route(f"/api/v1/{SchemaType.TIMELINE.value}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+@check_authentication
+def api_timeline() -> str:
+    if request.method == "GET":
+        try:
+            timeline_data = Timeline.select().order_by(Timeline.date.desc())
+            return jsonify({"timeline": timeline_data})
+        except DatabaseError as e:
+            return jsonify({"error": str(e)}), 500
+    elif request.method == "POST":
+        try:
+            data = request.json
+            Timeline.create(**data)
+            return jsonify({"message": "Timeline added successfully"})
+        except DatabaseError as e:
+            return jsonify({"error": str(e)}), 500
+    elif request.method == "PUT":
+        try:
+            data = request.json
+            Timeline.update(**data).where(Timeline.title == data["title"]).execute()
+            return jsonify({"message": "Timeline updated successfully"})
+        except DatabaseError as e:
+            return jsonify({"error": str(e)}), 500
+    elif request.method == "DELETE":
+        try:
+            data = request.json
+            Timeline.delete().where(Timeline.title == data["title"]).execute()
+            return jsonify({"message": "Timeline deleted successfully"})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":

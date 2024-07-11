@@ -1,10 +1,14 @@
 from typing import Dict
 from abc import ABC, abstractmethod
 from enum import Enum
+from datetime import datetime
+
 
 class SchemaType(Enum):
     PROJECTS = "projects"
     HOBBIES = "hobbies"
+    TIMELINE = "timeline"
+
 
 class Schema(ABC):
     @abstractmethod
@@ -89,3 +93,38 @@ class HobbiesSchema(Schema):
         if type(image) != str:
             raise ValueError("Image must be a string")
         return image
+
+
+class TimelineSchema(Schema):
+    def __init__(self, title: str, description: str, date: datetime):
+        self.title = self.__title(title)
+        self.description = self.__description(description)
+        self.date = self.__date(date)
+
+    def json(self) -> Dict[str, str]:
+        return {
+            "title": self.title,
+            "description": self.description,
+            "date": self.date.strftime("%Y-%m-%d"),
+        }
+
+    def __title(self, title: str) -> str:
+        if title is None:
+            return None
+        if type(title) != str:
+            raise ValueError("Title must be a string")
+        return title
+
+    def __description(self, description: str) -> str:
+        if description is None:
+            return None
+        if type(description) != str:
+            raise ValueError("Description must be a string")
+        return description
+
+    def __date(self, date: datetime) -> datetime:
+        if date is None:
+            return None
+        if type(date) != datetime:
+            raise ValueError("Date must be a datetime")
+        return date

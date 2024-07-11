@@ -1,0 +1,15 @@
+{% extends "layout.jinja2" %}
+
+{% block main%}
+  <div class="timeline">
+    {% for i, item in enumerate(timeline) %}
+    <article class="container {{ 'left' if i % 2 == 0 else 'right' }}">
+      <div class="content">
+        <h2>{{ item.title }}</h2>
+        <span>{{ item.date }}</span>
+      </div>
+      <p>{{ item.description }}</p>
+    </article>
+    {% endfor %}
+  </div>
+{% endblock %}
