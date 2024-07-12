@@ -1,15 +1,39 @@
 {% extends "layout.jinja2" %}
 
-{% block main%}
-  <div class="timeline">
-    {% for i, item in enumerate(timeline) %}
-    <article class="container {{ 'left' if i % 2 == 0 else 'right' }}">
-      <div class="content">
-        <h2>{{ item.title }}</h2>
-        <span>{{ item.date }}</span>
+{% block main %}
+  <div class="entries">
+    {% set event_types = [
+      "Info Session",
+      "Workshop / Study Group",
+      "Speaker Session or Tech Talk",
+      "Hackathon",
+      "Watch Party",
+      "Demo Day",
+      "External Ticketing (External RSVP)",
+      "Test Event (use only for event testing)"
+    ] %}
+    {% set count = 0 %}
+    {% for item in timeline %}
+      {% set count = count + 1 %}
+      {% set filtered = " ".join(item.description.replace("\n", " ").split()[5:]) %}
+      {% set description = [] %}
+      {% set location = None %}
+      {% for event in event_types %}
+        {% if event in filtered %}
+          {% set description = description + [event] %}
+          {% set location = filtered.split(event)[1].strip() %}
+        {% endif %}
+      {% endfor %}
+      <div class="entry">
+        <div class="title {{ 'big' if count % 3 == 0 else '' }}">{{ item.title }}</div>
+        <div class="body">
+          <span>{{ " ".join(item.date.split()[:4]) }}</span>
+          <p>{{ description | join(', ') }}</p>
+          {% if location %}
+            <p>{{ location }}</p>
+          {% endif %}
+        </div>
       </div>
-      <p>{{ item.description }}</p>
-    </article>
     {% endfor %}
   </div>
 {% endblock %}

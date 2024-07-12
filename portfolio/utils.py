@@ -1,9 +1,10 @@
-from pydantic import BaseModel, EmailStr
-from flask import jsonify
-import json
 import os
+import json
+from flask import jsonify
+from pydantic import BaseModel, EmailStr
 from typing import List, Dict
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
+
 
 class DataReader:
     def __init__(self, filename: str) -> None:
@@ -11,9 +12,10 @@ class DataReader:
 
     def read_data(self) -> List[Dict[str, str]]:
         pass
-    
+
     def write_data(self, data: List[Dict[str, str]]) -> None:
         pass
+
 
 class CsvReader(DataReader):
     def read_data(self) -> List[Dict[str, str]]:
@@ -22,9 +24,10 @@ class CsvReader(DataReader):
             for line in file:
                 data.append(line.strip().split(","))
             return data
-    
+
     def write_data(self, data: List[Dict[str, str]]) -> None:
         pass
+
 
 class JsonReader(DataReader):
     def read_data(self) -> List[Dict[str, str]]:
@@ -35,7 +38,7 @@ class JsonReader(DataReader):
                 return json.load(file)
         except FileNotFoundError:
             return {"error": "File not found"}
-    
+
     def write_data(self, data: List[Dict[str, str]]) -> None:
         try:
             base_path = os.path.dirname(__file__)
@@ -45,6 +48,7 @@ class JsonReader(DataReader):
         except FileNotFoundError:
             return {"error": "File not found"}
 
+
 class Processor:
     def __init__(self, data_reader: DataReader):
         self.data_reader = data_reader
@@ -52,7 +56,6 @@ class Processor:
     def process(self) -> List[Dict[str, str]]:
         data = self.data_reader.read_data()
         return data
-
 
 
 class ContactForm(BaseModel):
@@ -83,6 +86,6 @@ def post_function(
         json_body[schema_type.value].append(body)
         data_reader = JsonReader(f"static/json/{schema_type.value}.json")
         data_reader.write_data(json_body)
-        
+
     except ValueError as e:
         return jsonify({"message": str(e)}), 400

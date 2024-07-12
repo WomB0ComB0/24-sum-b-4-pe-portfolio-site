@@ -73,7 +73,6 @@ def active_menu(menu: List[Dict[str, str]], url: str) -> str:
             item["active"] = False
     return menu
 
-
 @app.route("/", methods=["GET", "OPTIONS"])
 def index():
     # print(request.url)
@@ -137,7 +136,7 @@ def projects():
     )
 
 
-@app.route("/timeline", methods=["GET", "OPTIONS"])
+@app.route(f"/{SchemaType.TIMELINE.value}", methods=["GET", "OPTIONS"])
 def timeline():
     menu = active_menu(nav_menu, request.url)
     if request.method == "OPTIONS":
@@ -147,6 +146,10 @@ def timeline():
         timeout=10,
         headers={"Authorization": f"{os.getenv('TOKEN')}"},
     )
+    if response.content:
+        print(response.json())
+    else:
+        print("Empty response")
     timeline_data = response.json()["timeline"]
     return render_template(
         "pages/timeline.jinja2",
@@ -198,8 +201,9 @@ def not_found(e):
 def api_projects() -> str:
     if request.method == "GET":
         try:
-            projects_data = Projects.select()
-            return jsonify({"projects": projects_data})
+            projects_data: list[Projects] = list(Projects.select())
+            projects_list = [item.__data__ for item in projects_data]
+            return jsonify({"projects": projects_list})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
@@ -239,8 +243,9 @@ def api_projects() -> str:
 def api_hobbies() -> str:
     if request.method == "GET":
         try:
-            hobbies_data = Hobbies.select()
-            return jsonify({"hobbies": hobbies_data})
+            hobbies_data: list[Hobbies] = list(Hobbies.select())
+            hobbies_list = [item.__data__ for item in hobbies_data]
+            return jsonify({"hobbies": hobbies_list})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
@@ -277,21 +282,30 @@ def api_hobbies() -> str:
 def api_timeline() -> str:
     if request.method == "GET":
         try:
-            timeline_data = Timeline.select().order_by(Timeline.date.desc())
-            return jsonify({"timeline": timeline_data})
+            timeline_data: list[Timeline] = list(Timeline.select().order_by(Timeline.date.desc()))
+            timeline_list = [item.__data__ for item in timeline_data]
+            return jsonify({"timeline": timeline_list})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
             data = request.json
-            Timeline.create(**data)
+            if isinstance(data, list):
+                for item in data:
+                    Timeline.create(**item)
+            else:
+                Timeline.create(**data)
             return jsonify({"message": "Timeline added successfully"})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
             data = request.json
-            Timeline.update(**data).where(Timeline.title == data["title"]).execute()
+            if isinstance(data, list):
+                for item in data:
+                    Timeline.update(**item).where(Timeline.title == item["title"]).execute()
+            else:
+                Timeline.update(**data).where(Timeline.title == data["title"]).execute()
             return jsonify({"message": "Timeline updated successfully"})
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500

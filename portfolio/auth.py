@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def check_authentication(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

@@ -14,6 +14,8 @@ mydb = MySQLDatabase(
     host=os.getenv("MYSQL_HOST"),
     port=3306,
 )
+
+
 class Database:
     def __init__(self, db_path: str):
         self.db_path = db_path

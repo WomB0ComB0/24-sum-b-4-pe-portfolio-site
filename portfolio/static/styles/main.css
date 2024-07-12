@@ -59,6 +59,7 @@ body {
     margin: 0px;
     color: white;
     scroll-behavior: smooth;
+    min-height: 100vh;
 }
 
 .scroll-down > nav {
