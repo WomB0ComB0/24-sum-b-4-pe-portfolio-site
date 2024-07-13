@@ -2,8 +2,9 @@ import os
 import json
 from flask import jsonify
 from pydantic import BaseModel, EmailStr
-from typing import List, Dict
+from typing import List, Dict, Any, Callable
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
+from functools import wraps, cache
 
 
 class DataReader:
@@ -50,13 +51,26 @@ class JsonReader(DataReader):
 
 
 class Processor:
-    def __init__(self, data_reader: DataReader):
+    def __init__(self, data_reader: DataReader) -> None :
         self.data_reader = data_reader
 
     def process(self) -> List[Dict[str, str]]:
         data = self.data_reader.read_data()
         return data
 
+
+class Memoize:
+    def __init__(self, func: Callable) -> None:
+        self.func = func
+        self.cache = {}
+
+    def __call__(self, *args, **kwargs) -> Any:
+        if args not in self.cache:
+            self.cache[args] = self.func(*args, **kwargs)
+        return self.cache[args]
+
+    def clear_cache(self) -> None:
+        self.cache = {}
 
 class ContactForm(BaseModel):
     name: str
