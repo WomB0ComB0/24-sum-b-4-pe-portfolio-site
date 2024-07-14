@@ -3,7 +3,7 @@ import os
 from flask import g
 from portfolio import create_app
 from portfolio.db import mydb
-from portfolio.mysql_db import Projects, Hobbies
+from portfolio.mysql_db import Projects, Hobbies, Timeline
 from dotenv import load_dotenv
 import requests_mock
 
@@ -19,18 +19,14 @@ class TestRoutes(unittest.TestCase):
         cls.app.config.update({
             "TESTING": True,
         })
-        with cls.app.app_context():
-            mydb.connect()
-            mydb.create_tables([Projects, Hobbies])
-            mydb.close()
+        mydb.connect()
+        mydb.create_tables([Projects, Hobbies, Timeline])
         cls.client = cls.app.test_client()
 
     @classmethod
     def tearDownClass(cls):
-        with cls.app.app_context():
-            mydb.connect()
-            mydb.drop_tables([Projects, Hobbies])
-            mydb.close()
+        mydb.drop_tables([Projects, Hobbies, Timeline])
+        mydb.close()
 
     def test_index_route(self):
         response = self.client.get('/')

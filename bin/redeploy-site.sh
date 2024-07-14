@@ -66,9 +66,6 @@ check_mysql() {
     mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
     mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
     mysql -u root -e "FLUSH PRIVILEGES;"
-
-    mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
-    mysql -u root -e "USE ${MYSQL_DATABASE};"
 }
 
 clean_environment() {
