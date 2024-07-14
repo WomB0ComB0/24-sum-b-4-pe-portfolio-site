@@ -79,6 +79,8 @@ clean_environment() {
         tmux kill-server
     fi
 
+    echo "This is a flag $(pwd)"
+    
     # Fetch latest changes from GitHub main branch
     git fetch && git reset origin/main --hard || echo "Failed to fetch and reset origin/main"
 }

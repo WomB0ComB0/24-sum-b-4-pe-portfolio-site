@@ -12,35 +12,28 @@ load_dotenv()
 os.environ["FLASK_APP"] = "main"
 root_path = os.path.dirname(os.path.abspath(__file__))
 
+# Assuming you have a function to create your Flask app
+app = create_app()
+
+# Database configuration
+mydb = MySQLDatabase(
+    os.getenv('MYSQL_DATABASE'),
+    user=os.getenv('MYSQL_USER'),
+    password=os.getenv('MYSQL_PASSWORD'),
+    host=os.getenv('MYSQL_HOST'),
+    port=3306
+)
+
 class TestRoutes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = create_app()
-        cls.app.config.update({
-            "TESTING": True,
-        })
-        mydb = MySQLDatabase(
-            os.getenv('MYSQL_DATABASE'),
-            user=os.getenv('MYSQL_USER'),
-            password=os.getenv('MYSQL_PASSWORD'),
-            host=os.getenv('MYSQL_HOST'),
-            port=3306
-        )
         mydb.connect()
-        mydb.create_tables([Projects, Hobbies, Timeline])
-        cls.client = cls.app.test_client()
+        mydb.create_tables([Hobbies, Projects, Timeline])
+        cls.client = app.test_client()
 
     @classmethod
     def tearDownClass(cls):
-        mydb = MySQLDatabase(
-            os.getenv('MYSQL_DATABASE'),
-            user=os.getenv('MYSQL_USER'),
-            password=os.getenv('MYSQL_PASSWORD'),
-            host=os.getenv('MYSQL_HOST'),
-            port=3306
-        )
-        mydb.connect()
-        mydb.drop_tables([Projects, Hobbies, Timeline])
+        mydb.drop_tables([Hobbies, Projects, Timeline])
         mydb.close()
 
     def test_index_route(self):
