@@ -36,7 +36,7 @@ class TestRoutes(unittest.TestCase):
 
         print("Starting Flask server...")
         cls.flask_process = subprocess.Popen(
-            ["flask", "run", "--host=0.0.0.0", "--port=80"]
+            ["flask", "run", "--host=0.0.0.0", "--port=5000"]
         )
         time.sleep(5)
     @classmethod
