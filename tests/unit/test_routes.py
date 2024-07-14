@@ -17,7 +17,7 @@ root_path = os.path.dirname(os.path.abspath(__file__))
 app = create_app()
 
 mydb = MySQLDatabase(
-    os.getenv("MYSQL_DATABASE"),
+    os.getenv("TEST_MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
     host=os.getenv("MYSQL_HOST"),
