@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Source environment variables from .env file
+cd "$(dirname "$0")" || { echo "Failed to change directory"; exit 1; }
+
+cd 24-sum-b-4-pe-portfolio-site || { echo "Failed to change directory"; exit 1; }
+
 if [ -f ".env" ]; then
     export $(cat .env | xargs)
 else
@@ -68,9 +71,6 @@ clean_environment() {
     else
         tmux kill-server
     fi
-
-    # Change directory to your project folder
-    cd 24-sum-b-4-pe-portfolio-site || { echo "Directory not found"; exit 1; }
 
     # Fetch latest changes from GitHub main branch
     git fetch && git reset origin/main --hard || echo "Failed to fetch and reset origin/main"
