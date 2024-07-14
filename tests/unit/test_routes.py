@@ -15,12 +15,16 @@ os.environ["FLASK_APP"] = "main"
 root_path = os.path.dirname(os.path.abspath(__file__))
 
 app = create_app()
-mydb = None
+mydb = None  # Define mydb at the module level
 
 class TestRoutes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         global mydb
+        # Ensure environment variables are loaded
+        load_dotenv()
+        
+        # Initialize the database connection
         mydb = MySQLDatabase(
             os.getenv("TEST_MYSQL_DATABASE"),
             user=os.getenv("MYSQL_USER"),
@@ -28,6 +32,7 @@ class TestRoutes(unittest.TestCase):
             host=os.getenv("MYSQL_HOST"),
             port=3306,
         )
+        
         print("Connecting to the database...")
         mydb.connect()
         print("Creating tables...")
