@@ -62,6 +62,10 @@ check_mysql() {
         echo "MySQL service is not running. Starting MySQL service..."
         sudo systemctl start mysqld
     fi
+
+    mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -e "FLUSH PRIVILEGES;"
 }
 
 clean_environment() {
