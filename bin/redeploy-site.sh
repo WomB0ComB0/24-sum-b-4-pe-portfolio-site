@@ -128,6 +128,12 @@ checks() {
     if ! command -v flask &> /dev/null; then
         pip install --user Flask
     fi
+
+    # Ensure jq is installed
+    if ! command -v jq &> /dev/null; then
+        echo "jq could not be found, installing..."
+        sudo dnf install -y jq
+    fi
 }
 
 start_flask_server() {
@@ -158,14 +164,9 @@ run_tests() {
     fi
 }
 
-# Ensure jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "jq could not be found, installing..."
-    sudo dnf install -y jq
-fi
 
 http_tests() {
-    TOKEN=$TOKEN  # Replace with your actual token
+    TOKEN=testing
 
     response=$(curl -s -X GET http://localhost:5000/api/v1/hobbies -H "Authorization: Bearer $TOKEN")
     echo "Hobbies response: $response"
