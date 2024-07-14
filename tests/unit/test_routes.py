@@ -5,7 +5,7 @@ from portfolio import create_app
 from portfolio.mysql_db import Projects, Hobbies, Timeline
 from dotenv import load_dotenv
 import requests_mock
-from portfolio.mysql_db import MySQLDatabase
+from peewee import MySQLDatabase
 
 load_dotenv()
 
