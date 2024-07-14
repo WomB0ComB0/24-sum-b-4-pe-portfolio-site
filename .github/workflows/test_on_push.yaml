@@ -55,6 +55,7 @@ jobs:
       - name: Run tests
         env:
           FLASK_ENV: testing
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           flask run --port 5000 &
           while ! nc -z localhost 5000; do   
