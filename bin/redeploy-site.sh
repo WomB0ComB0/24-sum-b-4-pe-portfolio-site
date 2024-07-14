@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Source environment variables from .env file
+if [ -f ".env" ]; then
+    export $(cat .env | xargs)
+else
+    echo ".env file not found"
+    exit 1
+fi
+
 flask_started=false
 max_retries=1
 retry_count=0
@@ -35,6 +43,22 @@ system_check() {
             exit 1
             ;;
     esac
+}
+
+check_mysql() {
+    # Check if MySQL is installed
+    if ! command -v mysql &> /dev/null; then
+        echo "MySQL is not installed. Installing MySQL..."
+        sudo dnf install -y mysql-server
+        sudo systemctl start mysqld
+        sudo systemctl enable mysqld
+    fi
+
+    # Check if MySQL service is running
+    if ! systemctl is-active --quiet mysqld; then
+        echo "MySQL service is not running. Starting MySQL service..."
+        sudo systemctl start mysqld
+    fi
 }
 
 clean_environment() {
@@ -90,11 +114,6 @@ checks() {
     if ! command -v flask &> /dev/null; then
         pip install --user Flask
     fi
-
-    # Load environment variables from .env file
-    if [ -f ".env" ]; then
-        export $(cat .env | xargs)
-    fi
 }
 
 run_tests() {
@@ -117,6 +136,7 @@ run_tests() {
 main() {
     start_time=$(date +%s)
     system_check || echo "System check failed"
+    check_mysql || echo "MySQL check failed"
     clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
     run_tests || echo "Tests failed"
