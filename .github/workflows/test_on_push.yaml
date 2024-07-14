@@ -52,7 +52,14 @@ jobs:
       - name: Start Flask server
         run: |
           nohup flask run --host=0.0.0.0 --port=5000 &
-          sleep 5  # Give the server some time to start
+          for i in {1..10}; do
+            if nc -zv 127.0.0.1 5000; then
+              echo "Flask server is ready"
+              break
+            fi
+            echo "Waiting for Flask server to be ready..."
+            sleep 2
+          done
         env:
           FLASK_APP: main
           FLASK_ENV: development
