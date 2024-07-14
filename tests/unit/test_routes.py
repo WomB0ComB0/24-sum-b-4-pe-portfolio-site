@@ -21,6 +21,7 @@ class TestRoutes(unittest.TestCase):
         })
         mydb.connect()
         mydb.create_tables([Projects, Hobbies, Timeline])
+        mydb.close()
         cls.client = cls.app.test_client()
 
     @classmethod
