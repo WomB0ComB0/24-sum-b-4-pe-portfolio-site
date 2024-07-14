@@ -49,37 +49,15 @@ jobs:
           done
       - name: Load environment variables
         run: cp .env.example .env
-      - name: Start Flask server
+      - name: Initialize Database
         run: |
-          nohup flask run --host=0.0.0.0 --port=5000 &
-          for i in {1..10}; do
-            if nc -zv 127.0.0.1 5000; then
-              echo "Flask server is ready"
-              break
-            fi
-            echo "Waiting for Flask server to be ready..."
-            sleep 2
-          done
-        env:
-          FLASK_APP: main
-          FLASK_ENV: development
-          FLASK_DEBUG: 1
-          MYSQL_HOST: 127.0.0.1
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-          MYSQL_DB: test
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test
+          python -c "from portfolio import create_app; create_app()"
       - name: Run tests
+        env:
+          FLASK_ENV: testing
         run: |
-          pip install coverage
-          coverage run -m unittest discover -s tests/unit -p 'test_*.py'
-      - name: Tests report
-        run: coverage report
-      - name: Hello world action step
-        id: hello
-        uses: ozada/test-action@v1
-        with:
-          who-to-greet: 'Mike Odnis'
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+          flask run --port 5000 &
+          while ! nc -z localhost 5000; do   
+            sleep 1
+          done
+          pytest
