@@ -64,7 +64,9 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Hobbies", response.data)
 
-    def test_projects_route(self):
+    @requests_mock.Mocker()
+    def test_projects_route(self, mocker):
+        mocker.get("http://localhost:5000/api/v1/projects", json={"projects": []})
         response = self.client.get(
             "/projects", headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
