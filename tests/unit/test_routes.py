@@ -14,10 +14,8 @@ load_dotenv()
 os.environ["FLASK_APP"] = "main"
 root_path = os.path.dirname(os.path.abspath(__file__))
 
-# Assuming you have a function to create your Flask app
 app = create_app()
 
-# Database configuration
 mydb = MySQLDatabase(
     os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
@@ -36,13 +34,11 @@ class TestRoutes(unittest.TestCase):
         mydb.create_tables([Hobbies, Projects, Timeline])
         cls.client = app.test_client()
 
-        # Start the Flask server
         print("Starting Flask server...")
         cls.flask_process = subprocess.Popen(
             ["flask", "run", "--host=0.0.0.0", "--port=80"]
         )
-        time.sleep(5)  # Wait for the server to start
-
+        time.sleep(5)
     @classmethod
     def tearDownClass(cls):
         print("Dropping tables...")
@@ -50,7 +46,6 @@ class TestRoutes(unittest.TestCase):
         print("Closing database connection...")
         mydb.close()
 
-        # Stop the Flask server
         print("Stopping Flask server...")
         cls.flask_process.terminate()
         cls.flask_process.wait()

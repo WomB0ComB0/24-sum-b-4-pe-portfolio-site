@@ -126,14 +126,12 @@ checks() {
 }
 
 start_flask_server() {
-    # Start the Flask server in the background
     nohup flask run --host=0.0.0.0 > flask.log 2>&1 &
     flask_pid=$!
     echo "Flask server started with PID $flask_pid"
 }
 
 stop_flask_server() {
-    # Stop the Flask server
     if [ -n "$flask_pid" ]; then
         kill $flask_pid
         echo "Flask server stopped"
@@ -141,7 +139,6 @@ stop_flask_server() {
 }
 
 run_tests() {
-    # Run the unittest command and capture the output and exit code
     output=$(python -m unittest discover -s tests/unit -p "test_*.py" 2>&1)
     exit_code=$?
 
@@ -164,7 +161,6 @@ main() {
     clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
     start_flask_server || echo "Failed to start Flask server"
-    sleep 5  # Give the Flask server some time to start
     run_tests || echo "Tests failed"
     stop_flask_server || echo "Failed to stop Flask server"
     end_time=$(date +%s)
