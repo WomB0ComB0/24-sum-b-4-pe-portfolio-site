@@ -39,7 +39,7 @@ jobs:
       - name: Run tests
         run: |
           pip install coverage
-          coverage run -m unittest discover
+          coverage run -m unittest discover -s tests/unit -p 'test_*.py'
       - name: Tests report
         run: coverage report
 
