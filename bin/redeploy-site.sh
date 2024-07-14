@@ -165,6 +165,7 @@ main() {
     clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
     start_flask_server || echo "Failed to start Flask server"
+    sleep 5  # Give the Flask server some time to start
     run_tests || echo "Tests failed"
     stop_flask_server || echo "Failed to stop Flask server"
     end_time=$(date +%s)
@@ -172,4 +173,3 @@ main() {
 }
 
 main || echo "Failed to run main()"
-fi
