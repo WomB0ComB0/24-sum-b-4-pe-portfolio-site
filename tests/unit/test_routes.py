@@ -26,6 +26,7 @@ class TestRoutes(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        mydb.connect()
         mydb.drop_tables([Projects, Hobbies, Timeline])
         mydb.close()
 
