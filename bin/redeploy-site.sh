@@ -150,13 +150,26 @@ run_tests() {
     # Check if the tests passed or failed
     if [ $exit_code -eq 0 ]; then
         echo "Tests passed successfully!"
-        rm tests/unit/test_portfolio.db
         echo "$output"
     else
         echo "Tests failed."
         echo "$output"
         exit $exit_code
     fi
+}
+
+http_tests() {
+    response=$(curl -s -X GET http://localhost:5000/api/v1/hobbies)
+    echo "Hobbies response: $response"
+    echo "$response" | jq . || echo "Hobbies check failed"
+
+    response=$(curl -s -X GET http://localhost:5000/api/v1/projects)
+    echo "Projects response: $response"
+    echo "$response" | jq . || echo "Projects check failed"
+
+    response=$(curl -s -X GET http://localhost:5000/api/v1/timeline)
+    echo "Timeline response: $response"
+    echo "$response" | jq . || echo "Timeline check failed"
 }
 
 main() {
@@ -166,6 +179,7 @@ main() {
     clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
     start_flask_server || echo "Failed to start Flask server"
+    http_tests || echo "HTTP tests failed"
     run_tests || echo "Tests failed"
     stop_flask_server || echo "Failed to stop Flask server"
     end_time=$(date +%s)
