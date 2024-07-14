@@ -33,8 +33,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt && \
     pip install flask gunicorn requests python-dotenv
 
-# Create the database file and set permissions
-RUN touch /app/portfolio.db && chmod 666 /app/portfolio.db
+# Copy the .env.example file into the container and rename it to .env
+COPY .env.example .env
 
 # Switch to the non-privileged user to run the application.
 USER appuser
