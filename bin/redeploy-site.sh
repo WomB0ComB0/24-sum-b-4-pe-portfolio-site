@@ -164,9 +164,8 @@ run_tests() {
     fi
 }
 
-
 http_tests() {
-    TOKEN=testing
+    TOKEN=$1
 
     response=$(curl -s -X GET http://localhost:5000/api/v1/hobbies -H "Authorization: Bearer $TOKEN")
     echo "Hobbies response: $response"
