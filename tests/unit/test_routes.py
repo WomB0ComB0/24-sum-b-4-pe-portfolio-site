@@ -57,7 +57,7 @@ class TestRoutes(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_hobbies_route(self, mocker):
-        mocker.get("http://localhost:5000/api/v1/hobbies", json={"hobbies": []})
+        mocker.get("http://0.0.0.0:5000/api/v1/hobbies", json={"hobbies": []})
         response = self.client.get(
             "/hobbies", headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
@@ -66,7 +66,7 @@ class TestRoutes(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_projects_route(self, mocker):
-        mocker.get("http://localhost:5000/api/v1/projects", json={"projects": []})
+        mocker.get("http://0.0.0.0:5000/api/v1/projects", json={"projects": []})
         response = self.client.get(
             "/projects", headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
