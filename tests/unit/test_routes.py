@@ -55,16 +55,16 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Home", response.data)
 
-    def test_hobbies_route(self):
+    @requests_mock.Mocker()
+    def test_hobbies_route(self, mocker):
+        mocker.get("http://localhost:5000/api/v1/hobbies", json={"hobbies": []})
         response = self.client.get(
             "/hobbies", headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Hobbies", response.data)
 
-    @requests_mock.Mocker()
-    def test_projects_route(self, mocker):
-        mocker.get("http://localhost/api/v1/projects", json={"projects": []})
+    def test_projects_route(self):
         response = self.client.get(
             "/projects", headers={"Authorization": f'{os.getenv("TOKEN")}'}
         )
