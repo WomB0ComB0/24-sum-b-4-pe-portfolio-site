@@ -2,10 +2,10 @@ import unittest
 import os
 from flask import g
 from portfolio import create_app
-from portfolio.db import mydb
 from portfolio.mysql_db import Projects, Hobbies, Timeline
 from dotenv import load_dotenv
 import requests_mock
+from portfolio.mysql_db import MySQLDatabase
 
 load_dotenv()
 
@@ -19,13 +19,26 @@ class TestRoutes(unittest.TestCase):
         cls.app.config.update({
             "TESTING": True,
         })
+        mydb = MySQLDatabase(
+            os.getenv('MYSQL_DATABASE'),
+            user=os.getenv('MYSQL_USER'),
+            password=os.getenv('MYSQL_PASSWORD'),
+            host=os.getenv('MYSQL_HOST'),
+            port=3306
+        )
         mydb.connect()
         mydb.create_tables([Projects, Hobbies, Timeline])
-        mydb.close()
         cls.client = cls.app.test_client()
 
     @classmethod
     def tearDownClass(cls):
+        mydb = MySQLDatabase(
+            os.getenv('MYSQL_DATABASE'),
+            user=os.getenv('MYSQL_USER'),
+            password=os.getenv('MYSQL_PASSWORD'),
+            host=os.getenv('MYSQL_HOST'),
+            port=3306
+        )
         mydb.connect()
         mydb.drop_tables([Projects, Hobbies, Timeline])
         mydb.close()
