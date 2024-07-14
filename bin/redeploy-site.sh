@@ -158,16 +158,24 @@ run_tests() {
     fi
 }
 
+# Ensure jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq could not be found, installing..."
+    sudo dnf install -y jq
+fi
+
 http_tests() {
-    response=$(curl -s -X GET http://localhost:5000/api/v1/hobbies)
+    TOKEN=$TOKEN  # Replace with your actual token
+
+    response=$(curl -s -X GET http://localhost:5000/api/v1/hobbies -H "Authorization: Bearer $TOKEN")
     echo "Hobbies response: $response"
     echo "$response" | jq . || echo "Hobbies check failed"
 
-    response=$(curl -s -X GET http://localhost:5000/api/v1/projects)
+    response=$(curl -s -X GET http://localhost:5000/api/v1/projects -H "Authorization: Bearer $TOKEN")
     echo "Projects response: $response"
     echo "$response" | jq . || echo "Projects check failed"
 
-    response=$(curl -s -X GET http://localhost:5000/api/v1/timeline)
+    response=$(curl -s -X GET http://localhost:5000/api/v1/timeline -H "Authorization: Bearer $TOKEN")
     echo "Timeline response: $response"
     echo "$response" | jq . || echo "Timeline check failed"
 }
