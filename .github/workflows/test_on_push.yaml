@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.12]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -47,6 +47,6 @@ jobs:
         id: hello
         uses: ozada/test-action@v1
         with:
-          who-to-greet: 'Joe Dow'
+          who-to-greet: 'Mike Odnis'
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
