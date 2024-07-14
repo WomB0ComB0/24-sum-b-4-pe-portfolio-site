@@ -87,9 +87,9 @@ class TestRoutes(unittest.TestCase):
 
     def tearDown(self):
         with mydb.atomic():
-            Hobbies.delete()
-            Projects.delete()
-            Timeline.delete()
+            Hobbies.delete().execute(mydb)
+            Projects.delete().execute(mydb)
+            Timeline.delete().execute(mydb)
 
     def test_index_route(self):
         response = self.client.get("/")
