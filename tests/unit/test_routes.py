@@ -52,12 +52,38 @@ class TestRoutes(unittest.TestCase):
         cls.flask_process.wait()
 
     def setUp(self):
-        Hobbies.create(name="Reading", description="Reading various books and articles.", image="https://example.com/images/reading.jpg")
-        Hobbies.create(name="Gardening", description="Growing and taking care of plants.", image="https://example.com/images/gardening.jpg")
-        Projects.create(name="Portfolio Website", description="A personal portfolio website.", url="https://example.com/portfolio", language="Python")
-        Projects.create(name="Weather App", description="An app to check the weather.", url="https://example.com/weather", language="JavaScript")
-        Timeline.create(title="Started Learning Python", description="Began learning Python programming language.", date="2020-01-01")
-        Timeline.create(title="Built First Website", description="Created my first personal website.", date="2021-06-15")
+        Hobbies.create(
+            name="Reading",
+            description="Reading various books and articles.",
+            image="https://example.com/images/reading.jpg",
+        )
+        Hobbies.create(
+            name="Gardening",
+            description="Growing and taking care of plants.",
+            image="https://example.com/images/gardening.jpg",
+        )
+        Projects.create(
+            name="Portfolio Website",
+            description="A personal portfolio website.",
+            url="https://example.com/portfolio",
+            language="Python",
+        )
+        Projects.create(
+            name="Weather App",
+            description="An app to check the weather.",
+            url="https://example.com/weather",
+            language="JavaScript",
+        )
+        Timeline.create(
+            title="Started Learning Python",
+            description="Began learning Python programming language.",
+            date="2020-01-01",
+        )
+        Timeline.create(
+            title="Built First Website",
+            description="Created my first personal website.",
+            date="2021-06-15",
+        )
 
     def tearDown(self):
         with mydb.atomic():
@@ -74,7 +100,8 @@ class TestRoutes(unittest.TestCase):
     def test_hobbies_route(self, mocker):
         mocker.get("http://localhost:5000/api/v1/hobbies", json={"hobbies": []})
         response = self.client.get(
-            "/hobbies", headers={"Authorization": f'{os.getenv("TOKEN")}'}
+            "http://localhost:5000/hobbies",
+            headers={"Authorization": f'{os.getenv("TOKEN")}'},
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Hobbies", response.data)
@@ -83,7 +110,8 @@ class TestRoutes(unittest.TestCase):
     def test_projects_route(self, mocker):
         mocker.get("http://localhost:5000/api/v1/projects", json={"projects": []})
         response = self.client.get(
-            "/projects", headers={"Authorization": f'{os.getenv("TOKEN")}'}
+            "http://localhost:5000/projects",
+            headers={"Authorization": f'{os.getenv("TOKEN")}'},
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Projects", response.data)
