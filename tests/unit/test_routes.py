@@ -19,7 +19,7 @@ mydb = None  # Define mydb at the module level
 
 class TestRoutes(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         global mydb
         # Ensure environment variables are loaded
         load_dotenv()
@@ -46,7 +46,7 @@ class TestRoutes(unittest.TestCase):
         time.sleep(5)
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         print("Dropping tables...")
         mydb.drop_tables([Hobbies, Projects, Timeline])
         print("Closing database connection...")
@@ -56,7 +56,7 @@ class TestRoutes(unittest.TestCase):
         cls.flask_process.terminate()
         cls.flask_process.wait()
 
-    def setUp(self):
+    def setUp(self) -> None:
         Hobbies.create(
             name="Reading",
             description="Reading various books and articles.",
@@ -90,19 +90,19 @@ class TestRoutes(unittest.TestCase):
             date="2021-06-15",
         )
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         with mydb.atomic():
             Hobbies.delete().execute(mydb)
             Projects.delete().execute(mydb)
             Timeline.delete().execute(mydb)
 
-    def test_index_route(self):
+    def test_index_route(self) -> None:
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Home", response.data)
 
     @requests_mock.Mocker()
-    def test_hobbies_route(self, mocker):
+    def test_hobbies_route(self, mocker) -> None:
         mocker.get("http://localhost:5000/api/v1/hobbies", json={"hobbies": []})
         response = self.client.get(
             "http://localhost:5000/hobbies",
@@ -112,7 +112,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIn(b"Hobbies", response.data)
 
     @requests_mock.Mocker()
-    def test_projects_route(self, mocker):
+    def test_projects_route(self, mocker) -> None:
         mocker.get("http://localhost:5000/api/v1/projects", json={"projects": []})
         response = self.client.get(
             "http://localhost:5000/projects",
@@ -121,7 +121,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Projects", response.data)
 
-    def test_contact_get_route(self):
+    def test_contact_get_route(self) -> None:
         response = self.client.get("/contact")
         self.assertEqual(response.status_code, 200)
 

@@ -1,7 +1,10 @@
 {% extends "layout.jinja2" %}
 
 {% block main %}
-  <div class="entries">
+<header class="text-white max-w-[1556px] mx-auto rounded-lg">
+  <h1 class="text-4xl font-bold text-white py-8">Timeline</h1>
+</header>
+  <div class="entries min-h-screen">
     {% set event_types = [
       "Info Session",
       "Workshop / Study Group",
@@ -24,11 +27,15 @@
           {% set location = filtered.split(event)[1].strip() %}
         {% endif %}
       {% endfor %}
-      <div class="entry">
-        <div class="title {{ 'big' if count % 3 == 0 else '' }}">{{ item.title }}</div>
+      <div class="entry bg-white rounded-lg mb-4">
+        <div class="title {{ 'big' if count % 3 == 0 else '' }}">
+          <h3 class="text-[20px] font-bold text-[#333333] ">
+            {{ item.title }}
+          </h3>
+        </div>
         <div class="body">
-          <span>{{ " ".join(item.date.split()[:4]) }}</span>
-          <p>{{ description | join(', ') }}</p>
+          <span class="text-[18px] text-[#666666]">{{ " ".join(item.date.split()[:4]) }}</span>
+          <p class="text-[18px] text-[#666666]">{{ description | join(', ') }}</p>
           {% if location %}
             <p>{{ location }}</p>
           {% endif %}

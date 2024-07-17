@@ -66,6 +66,7 @@ check_mysql() {
     # Ensure MySQL user has the necessary permissions
     mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
     mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON ${TEST_MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
     mysql -u root -e "FLUSH PRIVILEGES;"
 
     # Select the database
