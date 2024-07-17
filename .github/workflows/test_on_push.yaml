@@ -1,10 +1,12 @@
 name: Run tests on any Push event
+
 on:
   push:
     tags:
       - '!refs/tags/*'
     branches:
       - '*'
+
 jobs:
   run_tests:
     runs-on: [ubuntu-latest]
@@ -21,15 +23,19 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
     strategy:
       matrix:
         python-version: [3.12]
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -37,21 +43,30 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
       - name: Install requirements
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Wait for MySQL to be ready
         run: |
           while ! mysqladmin ping -h"127.0.0.1" --silent; do
             echo "Waiting for database connection..."
             sleep 2
           done
+
+      - name: Create test database
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS portfolio_test;"
+
       - name: Load environment variables
         run: cp .env.example .env
+
       - name: Initialize Database
         run: |
           python -c "from portfolio import create_app; create_app()"
+
       - name: Run tests
         env:
           FLASK_ENV: testing

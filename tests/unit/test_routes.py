@@ -21,10 +21,8 @@ class TestRoutes(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         global mydb
-        # Ensure environment variables are loaded
-        load_dotenv()
-        
-        # Initialize the database connection
+        load_dotenv(dotenv_path=os.path.join(root_path, ".env"))
+
         mydb = MySQLDatabase(
             os.getenv("TEST_MYSQL_DATABASE"),
             user=os.getenv("MYSQL_USER"),
@@ -35,10 +33,23 @@ class TestRoutes(unittest.TestCase):
         try:
             print("Connecting to the database...")
             mydb.connect()
+            with mydb.atomic():
+                mydb.execute_sql(
+                    f"CREATE DATABASE IF NOT EXISTS {os.getenv('TEST_MYSQL_DATABASE')}"
+                )
+            mydb.close()
+
+            mydb.init(
+                os.getenv("TEST_MYSQL_DATABASE"),
+                user=os.getenv("MYSQL_USER"),
+                password=os.getenv("MYSQL_PASSWORD"),
+                host=os.getenv("MYSQL_HOST"),
+                port=3306,
+            )
+            mydb.connect()
             print("Creating tables...")
             mydb.create_tables([Hobbies, Projects, Timeline])
             print("Tables created successfully")
-            mydb.close()
         except DatabaseError as e:
             print(f"Error creating tables: {e}")
         cls.client = app.test_client()
