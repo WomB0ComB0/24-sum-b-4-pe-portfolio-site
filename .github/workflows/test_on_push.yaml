@@ -59,6 +59,8 @@ jobs:
       - name: Create test database
         run: |
           mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS portfolio_test;"
+          mysql -h 127.0.0.1 -uroot -proot -e "USE portfolio_test;"
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE TABLE IF NOT EXISTS Hobbies, Projects, Timeline;"
 
       - name: Load environment variables
         run: cp .env.example .env
