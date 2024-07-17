@@ -6,7 +6,7 @@ from portfolio import create_app
 from portfolio.mysql_db import Projects, Hobbies, Timeline
 from dotenv import load_dotenv
 import requests_mock
-from peewee import MySQLDatabase
+from peewee import MySQLDatabase, DatabaseError
 import subprocess
 
 load_dotenv()
@@ -32,11 +32,15 @@ class TestRoutes(unittest.TestCase):
             host=os.getenv("MYSQL_HOST"),
             port=3306,
         )
-        
-        print("Connecting to the database...")
-        mydb.connect()
-        print("Creating tables...")
-        mydb.create_tables([Hobbies, Projects, Timeline])
+        try:
+            print("Connecting to the database...")
+            mydb.connect()
+            print("Creating tables...")
+            mydb.create_tables([Hobbies, Projects, Timeline])
+            print("Tables created successfully")
+            mydb.close()
+        except DatabaseError as e:
+            print(f"Error creating tables: {e}")
         cls.client = app.test_client()
 
         print("Starting Flask server...")
