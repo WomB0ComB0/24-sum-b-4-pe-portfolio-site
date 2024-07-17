@@ -33,12 +33,7 @@ class TestRoutes(unittest.TestCase):
         try:
             print("Connecting to the database...")
             mydb.connect()
-            with mydb.atomic():
-                mydb.execute_sql(
-                    f"CREATE DATABASE IF NOT EXISTS {os.getenv('TEST_MYSQL_DATABASE')}"
-                )
-            mydb.close()
-
+            mydb.execute_sql(f"CREATE DATABASE IF NOT EXISTS {os.getenv('TEST_MYSQL_DATABASE')}")
             mydb.init(
                 os.getenv("TEST_MYSQL_DATABASE"),
                 user=os.getenv("MYSQL_USER"),

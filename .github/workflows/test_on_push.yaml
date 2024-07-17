@@ -59,9 +59,33 @@ jobs:
       - name: Create test database
         run: |
           mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS portfolio_test;"
-          mysql -h 127.0.0.1 -uroot -proot portfolio_test -e "CREATE TABLE IF NOT EXISTS Hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
-          mysql -h 127.0.0.1 -uroot -proot portfolio_test -e "CREATE TABLE IF NOT EXISTS Projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
-          mysql -h 127.0.0.1 -uroot -proot portfolio_test -e "CREATE TABLE IF NOT EXISTS Timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
+          mysql -h 127.0.0.1 -uroot -proot portfolio_test -e "
+            CREATE TABLE IF NOT EXISTS Hobbies (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(255) NOT NULL,
+              description TEXT NOT NULL,
+              image VARCHAR(255) NOT NULL,
+              created_at DATETIME NOT NULL,
+              updated_at DATETIME NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS Projects (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(255) NOT NULL,
+              description TEXT NOT NULL,
+              url VARCHAR(255) NOT NULL,
+              language VARCHAR(255) NOT NULL,
+              created_at DATETIME NOT NULL,
+              updated_at DATETIME NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS Timeline (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              title VARCHAR(255) NOT NULL,
+              description TEXT NOT NULL,
+              date DATETIME NOT NULL,
+              created_at DATETIME NOT NULL,
+              updated_at DATETIME NOT NULL
+            );
+          "
 
       - name: Load environment variables
         run: cp .env.example .env
