@@ -7,28 +7,78 @@
 <section id="contact" class="p-6 bg-violet-500 dark:bg-violet-4000 rounded-lg">
     <form id="contact" onsubmit="return postToMailto();" class="mt-4 space-y-4">
         <label for="name" class="block text-lg text-white">Name</label>
-        <input type="text" id="name" name="entry.538960720" data-name="Name" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Your Name">
+        <input type="text" id="name" name="entry.538960720" data-name="Name" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Your Name">
 
         <label for="profession" class="block text-lg text-white">Profession</label>
-        <input type="text" id="profession" name="entry.1780789653" data-name="Profession" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Your Profession">
+        <input type="text" id="profession" name="entry.1780789653" data-name="Profession" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Your Profession">
 
         <label for="company" class="block text-lg text-white">Company</label>
-        <input type="text" id="company" name="entry.884663504" data-name="Company" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Your Company">
+        <input type="text" id="company" name="entry.884663504" data-name="Company" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Your Company">
 
         <label for="email" class="block text-lg text-white">Email</label>
-        <input type="email" id="email" name="entry.1948239600" data-name="Email" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Your Email">
+        <input type="email" id="email" name="entry.1948239600" data-name="Email" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Your Email">
 
         <label for="subject" class="block text-lg text-white">Subject</label>
-        <input type="text" id="subject" name="entry.1384000823" data-name="Subject" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Subject">
+        <input type="text" id="subject" name="entry.1384000823" data-name="Subject" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Subject">
 
         <label for="message" class="block text-lg text-white">Message</label>
-        <textarea id="message" name="entry.711251017" data-name="Message" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white" placeholder="Your Message"></textarea>
-
-        <button type="submit" class="px-4 py-2 bg-violet-800 text-white rounded border-none">Submit</button>
+        <textarea id="message" name="entry.711251017" data-name="Message" required class="p-2 border rounded w-full border border-[#D1D5DB] bg-white text-[#333333]" placeholder="Your Message" maxlength="5000"></textarea>
+        <div class="flex flex-row justify-flex-start">
+            <p class="">
+                <span id="words" class="text-white"></span><span> - 500 Words left</span>
+            </p>
+            &nbsp;|&nbsp;
+            <p>
+                <span id="characters" class="text-white"></span><span> - 5000 Characters left</span>
+                
+            </p>
+        </div>
+        <button id="submit" type="submit" class="px-4 py-2 bg-violet-800 text-white rounded border-none">Submit</button>
     </form>
 </section>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='scripts/contact.js') }}"></script>
+<script>
+    let textArea = document.getElementById('message');
+    let button = document.getElementById('submit');
+    let words = 0;
+    let characters = 0;
+    console.log(window.getComputedStyle(textArea).paddingTop)
+    textArea.addEventListener('resize', function() {
+        const textAreaPadding = window.getComputedStyle(textArea).paddingTop + window.getComputedStyle(textArea).paddingBottom;
+        console.log(textAreaPadding)
+        const textAreaHeight = textArea.clientHeight - textAreaPadding;
+        const maxLines = Math.floor(textAreaHeight / window.getComputedStyle(textArea).lineHeight);
+        
+        if (maxLines > 20) {
+            alert('You have reached the maximum number of lines / height')
+            textArea.setAttribute('resize', 'none')
+        }
+    });
+
+    textArea.addEventListener('input', function() {
+        words = textArea.value.split(' ').length;
+        characters = textArea.value.length;
+        if (words >= 500) {
+            alert('You have reached the maximum number of words')
+            document.getElementById('words').innerText = words;
+            textArea.value = textArea.value.slice(0, 500)
+            button.setAttribute('disabled', 'disabled')
+        } else {
+            document.getElementById('words').innerText = words;
+            button.removeAttribute('disabled')
+        }
+        if (characters >= 5000) {
+            alert('You have reached the maximum number of characters')
+            document.getElementById('characters').innerText = characters;
+            textArea.value = textArea.value.slice(0, 5000)
+            button.setAttribute('disabled', 'disabled')
+        } else {
+            document.getElementById('characters').innerText = characters;
+            button.removeAttribute('disabled')
+        }
+    });
+</script>
 {% endblock %}

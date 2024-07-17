@@ -18,49 +18,11 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 root_path = os.path.dirname(base_path)
 from peewee import DatabaseError
 
-# def get_db():
-#     if "db" not in g:
-#         g.db = Database(os.path.join(root_path, "portfolio.db"))
-#     return g.db
-
-
-# @app.teardown_appcontext
-# def close_db(_error):
-#     try:
-#         print("Closing database connection")
-#         db = g.pop("db", None)
-#         if db is not None:
-#             db.close_connection()
-#     except Exception as e:
-#         print(f"Error closing database connection: {e}")
-#         raise e
-
-
-# connect = get_db()
-# connect.create_table(
-#     "projects",
-#     ProjectsSchema(
-#         name="",
-#         description="",
-#         url="",
-#         language="",
-#     ).json(),
-# )
-
-# connect.create_table(
-#     "hobbies",
-#     HobbiesSchema(
-#         name="",
-#         description="",
-#         image="",
-#     ).json(),
-# )
-
 nav_menu: List[Dict[str, str]] = [
     {"name": "Home", "url": "/"},
     {"name": "Hobbies", "url": f"/{SchemaType.HOBBIES.value}"},
     {"name": "Projects", "url": f"/{SchemaType.PROJECTS.value}"},
-    {"name": "Timeline", "url": "/timeline"},
+    {"name": "Timeline", "url": f"/{SchemaType.TIMELINE.value}"},
     {"name": "Contact", "url": "/contact"},
 ]
 
@@ -75,7 +37,6 @@ def active_menu(menu: List[Dict[str, str]], url: str) -> str:
 
 @app.route("/", methods=["GET", "OPTIONS"])
 def index():
-    # print(request.url)
     menu = active_menu(nav_menu, request.url)
     if request.method == "OPTIONS":
         return jsonify({"message": "GET, OPTIONS"})

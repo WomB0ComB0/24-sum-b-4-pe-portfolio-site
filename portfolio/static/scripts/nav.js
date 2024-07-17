@@ -1,8 +1,16 @@
 const body = document.body;
 let lastScroll = 0;
+const navbar = document.getElementById("navbar");
+
+navbar.addEventListener("click", () => {
+  body.classList.remove("scroll-down");
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+});
 
 window.addEventListener("scroll", () => {
-  console.log(window.scrollY);
   const currentScroll = window.scrollY;
   if (currentScroll <= 0) {
     body.classList.remove("scroll-up");

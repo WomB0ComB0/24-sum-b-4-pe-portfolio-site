@@ -5,11 +5,11 @@
         <img onclick="window.location.href='{{ url_for('index') }}'" src="{{ url_for('static', filename='svg/logo.svg') }}" alt="Logo" class="w-11 h-11 rounded-full cursor-pointer">
     </picture>
     <ul class="text-white">
-        <li><a href="{{ url_for('index') }}">Home</a></li>
-        <li><a href="{{ url_for('hobbies') }}">Hobbies</a></li>
-        <li><a href="{{ url_for('projects') }}">Projects</a></li>
-        <li><a href="{{ url_for('timeline') }}">Timeline</a></li>
-        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        <li><a class="hover:text-violet-200 active:text-violet-300" href="{{ url_for('index') }}">Home</a></li>
+        <li><a class="hover:text-violet-200 active:text-violet-300" href="{{ url_for('hobbies') }}">Hobbies</a></li>
+        <li><a class="hover:text-violet-200 active:text-violet-300" href="{{ url_for('projects') }}">Projects</a></li>
+        <li><a class="hover:text-violet-200 active:text-violet-300" href="{{ url_for('timeline') }}">Timeline</a></li>
+        <li><a class="hover:text-violet-200 active:text-violet-300" href="{{ url_for('contact') }}">Contact</a></li>
     </ul>
 </nav>
 

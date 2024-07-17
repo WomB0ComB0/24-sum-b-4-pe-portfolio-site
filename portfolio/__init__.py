@@ -9,7 +9,6 @@ def create_app():
     """Construct the core application."""
     app = Flask(__name__, template_folder="templates")
 
-    # Set up logging
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
