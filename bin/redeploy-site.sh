@@ -64,18 +64,18 @@ check_mysql() {
     fi
 
     # Ensure MySQL user has the necessary permissions
-    mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-    mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
-    mysql -u root -e "GRANT ALL PRIVILEGES ON ${TEST_MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
-    mysql -u root -e "FLUSH PRIVILEGES;"
+    mysql -u root -p"${MYSQL_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+    mysql -u root -p"${MYSQL_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -p"${MYSQL_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${TEST_MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -p"${MYSQL_PASSWORD}" -e "FLUSH PRIVILEGES;"
 
     # Select the database
-    mysql -u root -e "USE ${MYSQL_DATABASE};"
+    mysql -u root -p"${MYSQL_PASSWORD}" -e "USE ${MYSQL_DATABASE};"
 
     # Create tables
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
+    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
+    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
+    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
 }
 
 clean_environment() {
