@@ -6,8 +6,6 @@ class Hobbies(Model):
     name = CharField()
     description = TextField()
     image = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
     
     class Meta:
       database = mydb
@@ -17,8 +15,6 @@ class Projects(Model):
     description = TextField()
     url = CharField()
     language = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
     
     class Meta:
       database = mydb
@@ -27,8 +23,6 @@ class Timeline(Model):
     title = CharField()
     description = TextField()
     date = DateTimeField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
     
     class Meta:
       database = mydb

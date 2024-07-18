@@ -9,6 +9,7 @@ from portfolio.auth import check_authentication
 from portfolio.mysql_db import Projects, Hobbies, Timeline
 from pydantic import ValidationError
 from peewee import DatabaseError
+import logging
 
 load_dotenv()
 base_path = os.path.dirname(os.path.abspath(__file__))
@@ -255,10 +256,12 @@ def api_timeline() -> str:
             timeline_list = [item.__data__ for item in timeline_data]
             return jsonify({"timeline": timeline_list})
         except DatabaseError as e:
+            logger.error("Database error on GET: %s", e)
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
             data = request.json
+            logger.debug("POST data: %s", data)
             if isinstance(data, list):
                 for item in data:
                     Timeline.create(**item)
@@ -266,10 +269,12 @@ def api_timeline() -> str:
                 Timeline.create(**data)
             return jsonify({"message": "Timeline added successfully"})
         except DatabaseError as e:
+            logger.error("Database error on POST: %s", e)
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
             data = request.json
+            logger.debug("PUT data: %s", data)
             if isinstance(data, list):
                 for item in data:
                     Timeline.update(**item).where(Timeline.title == item["title"]).execute()
@@ -277,6 +282,7 @@ def api_timeline() -> str:
                 Timeline.update(**data).where(Timeline.title == data["title"]).execute()
             return jsonify({"message": "Timeline updated successfully"})
         except DatabaseError as e:
+            logger.error("Database error on PUT: %s", e)
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
@@ -287,6 +293,9 @@ def api_timeline() -> str:
             else:
                 return jsonify({"error": "Title key is missing in the request data"}), 400
         except DatabaseError as e:
+            logger.error("Database error on DELETE: %s", e)
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
+
+logger = logging.getLogger(__name__)

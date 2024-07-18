@@ -30,23 +30,17 @@ class HobbiesModel(BaseModel):
     name = CharField()
     description = TextField()
     image = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
 
 class ProjectsModel(BaseModel):
     name = CharField()
     description = TextField()
     url = CharField()
     language = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
 
 class TimelineModel(BaseModel):
     title = CharField()
     description = TextField()
     date = DateTimeField()
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_at = DateTimeField(default=datetime.datetime.now)
 
 class TestRoutes(unittest.TestCase):
     @classmethod
