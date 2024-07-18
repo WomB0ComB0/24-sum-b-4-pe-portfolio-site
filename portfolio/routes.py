@@ -6,17 +6,13 @@ from flask import request, jsonify, render_template, current_app as app
 from portfolio.schemas import SchemaType
 from portfolio.utils import ContactForm, JsonReader
 from portfolio.auth import check_authentication
-
-# from portfolio.db import Database
 from portfolio.mysql_db import Projects, Hobbies, Timeline
-
-# import sqlite3
 from pydantic import ValidationError
+from peewee import DatabaseError
 
 load_dotenv()
 base_path = os.path.dirname(os.path.abspath(__file__))
 root_path = os.path.dirname(base_path)
-from peewee import DatabaseError
 
 nav_menu: List[Dict[str, str]] = [
     {"name": "Home", "url": "/"},
@@ -169,7 +165,7 @@ def api_projects() -> str:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
-            data = request.json
+            data: dict = request.json
             if isinstance(data, list):
                 for item in data:
                     Projects.create(**item)
@@ -180,16 +176,22 @@ def api_projects() -> str:
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
-            data = request.json
-            Projects.update(**data).where(Projects.name == data["name"]).execute()
-            return jsonify({"message": "Project updated successfully"})
+            data: dict = request.json
+            if 'name' in data:
+                Projects.update(**data).where(Projects.name == data["name"]).execute()
+                return jsonify({"message": "Project updated successfully"})
+            else:
+                return jsonify({"error": "Name key is missing in the request data"}), 400
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
-            data = request.json
-            Projects.delete().where(Projects.name == data["name"]).execute()
-            return jsonify({"message": "Project deleted successfully"})
+            data: dict = request.json
+            if 'name' in data:
+                Projects.delete().where(Projects.name == data["name"]).execute()
+                return jsonify({"message": "Project deleted successfully"})
+            else:
+                return jsonify({"error": "Name key is missing in the request data"}), 400
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
@@ -211,7 +213,7 @@ def api_hobbies() -> str:
             return jsonify({"error": str(e)}), 500
     elif request.method == "POST":
         try:
-            data = request.json
+            data: dict = request.json
             if isinstance(data, list):
                 for item in data:
                     Hobbies.create(**item)
@@ -222,16 +224,22 @@ def api_hobbies() -> str:
             return jsonify({"error": str(e)}), 500
     elif request.method == "PUT":
         try:
-            data = request.json
-            Hobbies.update(**data).where(Hobbies.name == data["name"]).execute()
-            return jsonify({"message": "Hobby updated successfully"})
+            data: dict = request.json
+            if 'name' in data:
+                Hobbies.update(**data).where(Hobbies.name == data["name"]).execute()
+                return jsonify({"message": "Hobby updated successfully"})
+            else:
+                return jsonify({"error": "Name key is missing in the request data"}), 400
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
-            data = request.json
-            Hobbies.delete().where(Hobbies.name == data["name"]).execute()
-            return jsonify({"message": "Hobby deleted successfully"})
+            data: dict = request.json
+            if 'name' in data:
+                Hobbies.delete().where(Hobbies.name == data["name"]).execute()
+                return jsonify({"message": "Hobby deleted successfully"})
+            else:
+                return jsonify({"error": "Name key is missing in the request data"}), 400
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
@@ -272,9 +280,12 @@ def api_timeline() -> str:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
-            data = request.json
-            Timeline.delete().where(Timeline.title == data["title"]).execute()
-            return jsonify({"message": "Timeline deleted successfully"})
+            data: dict = request.json
+            if 'title' in data:
+                Timeline.delete().where(Timeline.title == data["title"]).execute()
+                return jsonify({"message": "Timeline deleted successfully"})
+            else:
+                return jsonify({"error": "Title key is missing in the request data"}), 400
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
