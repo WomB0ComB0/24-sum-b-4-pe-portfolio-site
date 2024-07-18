@@ -73,9 +73,9 @@ check_mysql() {
     mysql -u root -e "USE ${MYSQL_DATABASE};"
 
     # Create tables
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
-    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255), created_at DATETIME, updated_at DATETIME);"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255), created_at DATETIME, updated_at DATETIME);"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE, created_at DATETIME, updated_at DATETIME);"
 }
 
 clean_environment() {
