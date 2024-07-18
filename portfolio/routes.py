@@ -206,8 +206,24 @@ def api_hobbies() -> str:
         return handle_get_hobbies()
     elif request.method == "POST":
         return handle_post_hobbies()
+    elif request.method == "DELETE":
+        return handle_delete_hobby()
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
+    else:
+        return jsonify({"error": "Method not allowed"}), 405
+
+def handle_delete_hobby():
+    data = request.get_json()
+    if 'name' in data:
+        hobby = Hobbies.get_or_none(Hobbies.name == data['name'])
+        if hobby:
+            hobby.delete_instance()
+            return jsonify({"message": "Hobby deleted successfully"})
+        else:
+            return jsonify({"error": "Hobby not found"}), 404
+    else:
+        return jsonify({"error": "Name key is missing in the request data"}), 400
 
 
 @app.route(f"/api/v1/{SchemaType.HOBBIES.value}/<int:id>", methods=["GET", "PUT", "DELETE", "OPTIONS"])
@@ -250,7 +266,7 @@ def handle_put_hobby(id: int):
     try:
         data: dict = request.json
         logger.debug("PUT data: %s", data)
-        if 'id' in data:
+        if 'name' in data:
             Hobbies.update(**data).where(Hobbies.id == id).execute()
             return jsonify({"message": "Hobby updated successfully"})
         else:

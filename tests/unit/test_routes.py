@@ -87,7 +87,7 @@ class TestRoutes(unittest.TestCase):
             logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
             self.assertEqual(post_response.status_code, 200)
             delete_response = self.client.delete('/api/v1/hobbies', headers=self.headers, json={
-                "name": "Test"
+                "id": 1
             }, content_type='application/json')
             logger.debug("DELETE Response: %s, Content: %s", delete_response.status_code, delete_response.data)
             self.assertEqual(delete_response.status_code, 200)
