@@ -199,103 +199,141 @@ def api_projects() -> str:
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
 
 
-@app.route(
-    f"/api/v1/{SchemaType.HOBBIES.value}",
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-)
+@app.route(f"/api/v1/{SchemaType.HOBBIES.value}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 @check_authentication
 def api_hobbies() -> str:
     if request.method == "GET":
-        try:
-            hobbies_data: list[Hobbies] = list(Hobbies.select())
-            hobbies_list = [item.__data__ for item in hobbies_data]
-            return jsonify({"hobbies": hobbies_list})
-        except DatabaseError as e:
-            return jsonify({"error": str(e)}), 500
+        return handle_get_hobbies()
     elif request.method == "POST":
-        try:
-            data: dict = request.json
-            if isinstance(data, list):
-                for item in data:
-                    Hobbies.create(**item)
-            else:
-                Hobbies.create(**data)
-            return jsonify({"message": "Hobbies added successfully"})
-        except DatabaseError as e:
-            return jsonify({"error": str(e)}), 500
-    elif request.method == "PUT":
-        try:
-            data: dict = request.json
-            if 'name' in data:
-                Hobbies.update(**data).where(Hobbies.name == data["name"]).execute()
-                return jsonify({"message": "Hobby updated successfully"})
-            else:
-                return jsonify({"error": "Name key is missing in the request data"}), 400
-        except DatabaseError as e:
-            return jsonify({"error": str(e)}), 500
-    elif request.method == "DELETE":
-        try:
-            data: dict = request.json
-            if 'name' in data:
-                Hobbies.delete().where(Hobbies.name == data["name"]).execute()
-                return jsonify({"message": "Hobby deleted successfully"})
-            else:
-                return jsonify({"error": "Name key is missing in the request data"}), 400
-        except DatabaseError as e:
-            return jsonify({"error": str(e)}), 500
+        return handle_post_hobbies()
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
+
+
+@app.route(f"/api/v1/{SchemaType.HOBBIES.value}/<int:id>", methods=["GET", "PUT", "DELETE", "OPTIONS"])
+@check_authentication
+def api_hobbies_id(id: int) -> str:
+    if request.method == "PUT":
+        return handle_put_hobby(id)
+    elif request.method == "DELETE":
+        return handle_delete_hobby(id)
+    elif request.method == "OPTIONS":
+        return jsonify({"message": "GET, PUT, DELETE, OPTIONS"})
+
+
+def handle_get_hobbies():
+    try:
+        hobbies_data: list[Hobbies] = list(Hobbies.select())
+        hobbies_list = [item.__data__ for item in hobbies_data]
+        return jsonify({"hobbies": hobbies_list})
+    except DatabaseError as e:
+        logger.error("Database error on GET: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_post_hobbies():
+    try:
+        data: dict = request.json
+        logger.debug("POST data: %s", data)
+        if isinstance(data, list):
+            for item in data:
+                Hobbies.create(**item)
+        else:
+            Hobbies.create(**data)
+        return jsonify({"message": "Hobbies added successfully"})
+    except DatabaseError as e:
+        logger.error("Database error on POST: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_put_hobby(id: int):
+    try:
+        data: dict = request.json
+        logger.debug("PUT data: %s", data)
+        if 'id' in data:
+            Hobbies.update(**data).where(Hobbies.id == id).execute()
+            return jsonify({"message": "Hobby updated successfully"})
+        else:
+            return jsonify({"error": "Name key is missing in the request data"}), 400
+    except DatabaseError as e:
+        logger.error("Database error on PUT: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_delete_hobby(id: int):
+    try:
+        Hobbies.delete().where(Hobbies.id == id).execute()
+        return jsonify({"message": "Hobby deleted successfully"})
+    except DatabaseError as e:
+        logger.error("Database error on DELETE: %s", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route(f"/api/v1/{SchemaType.TIMELINE.value}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 @check_authentication
 def api_timeline() -> str:
     if request.method == "GET":
-        try:
-            timeline_data: list[Timeline] = list(Timeline.select().order_by(Timeline.date.desc()))
-            timeline_list = [item.__data__ for item in timeline_data]
-            return jsonify({"timeline": timeline_list})
-        except DatabaseError as e:
-            logger.error("Database error on GET: %s", e)
-            return jsonify({"error": str(e)}), 500
+        return handle_get_timeline()
     elif request.method == "POST":
-        try:
-            data = request.json
-            logger.debug("POST data: %s", data)
-            if isinstance(data, list):
-                for item in data:
-                    Timeline.create(**item)
-            else:
-                Timeline.create(**data)
-            return jsonify({"message": "Timeline added successfully"})
-        except DatabaseError as e:
-            logger.error("Database error on POST: %s", e)
-            return jsonify({"error": str(e)}), 500
+        return handle_post_timeline()
     elif request.method == "PUT":
-        try:
-            data = request.json
-            logger.debug("PUT data: %s", data)
-            if isinstance(data, list):
-                for item in data:
-                    Timeline.update(**item).where(Timeline.title == item["title"]).execute()
-            else:
-                Timeline.update(**data).where(Timeline.title == data["title"]).execute()
-            return jsonify({"message": "Timeline updated successfully"})
-        except DatabaseError as e:
-            logger.error("Database error on PUT: %s", e)
-            return jsonify({"error": str(e)}), 500
+        return handle_put_timeline()
     elif request.method == "DELETE":
-        try:
-            data: dict = request.json
-            if 'title' in data:
-                Timeline.delete().where(Timeline.title == data["title"]).execute()
-                return jsonify({"message": "Timeline deleted successfully"})
-            else:
-                return jsonify({"error": "Title key is missing in the request data"}), 400
-        except DatabaseError as e:
-            logger.error("Database error on DELETE: %s", e)
-            return jsonify({"error": str(e)}), 500
+        return handle_delete_timeline()
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
+
+
+def handle_get_timeline():
+    try:
+        timeline_data: list[Timeline] = list(Timeline.select().order_by(Timeline.date.desc()))
+        timeline_list = [item.__data__ for item in timeline_data]
+        return jsonify({"timeline": timeline_list})
+    except DatabaseError as e:
+        logger.error("Database error on GET: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_post_timeline():
+    try:
+        data = request.json
+        logger.debug("POST data: %s", data)
+        if isinstance(data, list):
+            for item in data:
+                Timeline.create(**item)
+        else:
+            Timeline.create(**data)
+        return jsonify({"message": "Timeline added successfully"})
+    except DatabaseError as e:
+        logger.error("Database error on POST: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_put_timeline():
+    try:
+        data = request.json
+        logger.debug("PUT data: %s", data)
+        if isinstance(data, list):
+            for item in data:
+                Timeline.update(**item).where(Timeline.title == item["title"]).execute()
+        else:
+            Timeline.update(**data).where(Timeline.title == data["title"]).execute()
+        return jsonify({"message": "Timeline updated successfully"})
+    except DatabaseError as e:
+        logger.error("Database error on PUT: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+def handle_delete_timeline():
+    try:
+        data: dict = request.json
+        if 'title' in data:
+            Timeline.delete().where(Timeline.title == data["title"]).execute()
+            return jsonify({"message": "Timeline deleted successfully"})
+        else:
+            return jsonify({"error": "Title key is missing in the request data"}), 400
+    except DatabaseError as e:
+        logger.error("Database error on DELETE: %s", e)
+        return jsonify({"error": str(e)}), 500
 
 logger = logging.getLogger(__name__)
