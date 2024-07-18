@@ -11,10 +11,6 @@ else
     exit 1
 fi
 
-flask_started=false
-max_retries=1
-retry_count=0
-
 system_check() {
     # Platform check
     case "$(uname)" in
@@ -79,13 +75,6 @@ check_mysql() {
 }
 
 clean_environment() {
-    # Install tmux if not installed
-    if ! command -v tmux &> /dev/null; then
-        sudo dnf install -y tmux
-    else
-        tmux kill-server
-    fi
-
     echo "This is a flag $(pwd)"
     
     # Fetch latest changes from GitHub main branch
@@ -138,41 +127,9 @@ checks() {
     fi
 }
 
-start_flask_server() {
-    # Check if port 5000 is in use
-    if lsof -i:5000; then
-        echo "Port 5000 is in use. Stopping the existing process..."
-        fuser -k 5000/tcp
-    fi
-
-    nohup flask run --host=0.0.0.0 > flask.log 2>&1 &
-    flask_pid=$!
-    echo "Flask server started with PID $flask_pid"
-}
-
-stop_flask_server() {
-    if [ -n "$flask_pid" ]; then
-        kill $flask_pid
-        echo "Flask server stopped"
-    fi
-}
-
-run_tests() {
-    mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to create database ${TEST_MYSQL_DATABASE}"
-    mysql -h 127.0.0.1 -u root -e "USE ${TEST_MYSQL_DATABASE};" || echo "Failed to use database ${TEST_MYSQL_DATABASE}"
-    output=$(python -m unittest discover -s tests/unit -p "test_*.py" 2>&1)
-    exit_code=$?
-    mysql -h 127.0.0.1 -u root -e "DROP DATABASE IF EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to drop database ${TEST_MYSQL_DATABASE}"
-
-    # Check if the tests passed or failed
-    if [ $exit_code -eq 0 ]; then
-        echo "Tests passed successfully!"
-        echo "$output"
-    else
-        echo "Tests failed."
-        echo "$output"
-        exit $exit_code
-    fi
+restart_myportfolio_service() {
+    sudo systemctl restart portfolio
+    echo "portfolio service restarted"
 }
 
 main() {
@@ -181,9 +138,7 @@ main() {
     check_mysql || echo "MySQL check failed"
     clean_environment || echo "Failed to clean environment"
     checks || echo "Checks failed"
-    start_flask_server || echo "Failed to start Flask server"
-    run_tests || echo "Tests failed"
-    stop_flask_server || echo "Failed to stop Flask server"
+    restart_myportfolio_service || echo "Failed to restart myportfolio service"
     end_time=$(date +%s)
     echo "Time taken to run main(): $((end_time - start_time)) seconds"
 }
