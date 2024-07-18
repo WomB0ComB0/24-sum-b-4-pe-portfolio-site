@@ -60,7 +60,7 @@ class TestRoutes(unittest.TestCase):
     def setUp(self):
         self.client = self.app.test_client()
         self.headers = {
-            'Authorization': f"{os.getenv("TOKEN")}",
+            'Authorization': os.getenv("TOKEN"),
             'HTTP_USER_AGENT': f"werkzeug/{werzeug_version}"
         }
 
