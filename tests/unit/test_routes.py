@@ -71,16 +71,19 @@ class TestRoutes(unittest.TestCase):
     def test_hobbies_route(self):
         try:
             get_response = self.client.get('/api/v1/hobbies', headers=self.headers)
+            logger.debug("GET Response: %s", get_response.status_code)
             self.assertEqual(get_response.status_code, 200)
             post_response = self.client.post('/api/v1/hobbies', headers=self.headers, json={
                 "name": "Test",
                 "description": "Test",
                 "image": "Test"
             }, content_type='application/json')
+            logger.debug("POST Response: %s", post_response.status_code)
             self.assertEqual(post_response.status_code, 200)
             delete_response = self.client.delete('/api/v1/hobbies', headers=self.headers, json={
                 "name": "Test"
             }, content_type='application/json')
+            logger.debug("DELETE Response: %s", delete_response.status_code)
             self.assertEqual(delete_response.status_code, 200)
         except requests.exceptions.RequestException as e:
             logger.error("Error in test_hobbies_route: %s", e)
@@ -89,6 +92,7 @@ class TestRoutes(unittest.TestCase):
     def test_projects_route(self):
         try:
             get_response = self.client.get('/api/v1/projects', headers=self.headers)
+            logger.debug("GET Response: %s", get_response.status_code)
             self.assertEqual(get_response.status_code, 200)
             post_response = self.client.post('/api/v1/projects', headers=self.headers, json={
                 "name": "Test",
@@ -96,10 +100,12 @@ class TestRoutes(unittest.TestCase):
                 "url": "Test",
                 "language": "Test"
             }, content_type='application/json')
+            logger.debug("POST Response: %s", post_response.status_code)
             self.assertEqual(post_response.status_code, 200)
             delete_response = self.client.delete('/api/v1/projects', headers=self.headers, json={
                 "name": "Test"
             }, content_type='application/json')
+            logger.debug("DELETE Response: %s", delete_response.status_code)
             self.assertEqual(delete_response.status_code, 200)
         except requests.exceptions.RequestException as e:
             logger.error("Error in test_projects_route: %s", e)
@@ -108,16 +114,19 @@ class TestRoutes(unittest.TestCase):
     def test_timeline_route(self):
         try:
             get_response = self.client.get('/api/v1/timeline', headers=self.headers)
+            logger.debug("GET Response: %s", get_response.status_code)
             self.assertEqual(get_response.status_code, 200)
             post_response = self.client.post('/api/v1/timeline', headers=self.headers, json={
                 "title": "Test",
                 "description": "Test",
                 "date": "2021-01-01"
             }, content_type='application/json')
+            logger.debug("POST Response: %s", post_response.status_code)
             self.assertEqual(post_response.status_code, 200)
             delete_response = self.client.delete('/api/v1/timeline', headers=self.headers, json={
                 "title": "Test"
             }, content_type='application/json')
+            logger.debug("DELETE Response: %s", delete_response.status_code)
             self.assertEqual(delete_response.status_code, 200)
         except requests.exceptions.RequestException as e:
             logger.error("Error in test_timeline_route: %s", e)
