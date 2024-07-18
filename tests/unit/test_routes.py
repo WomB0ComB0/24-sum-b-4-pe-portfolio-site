@@ -2,14 +2,15 @@ import unittest
 import os
 import datetime
 import importlib.metadata
+import logging
 from peewee import MySQLDatabase, Model, CharField, TextField, DateTimeField
 from portfolio import create_app
 from dotenv import load_dotenv
+import requests
 
 werzeug_version = importlib.metadata.version("werkzeug")
 load_dotenv()
 
-# Initialize the database connection
 mydb = MySQLDatabase(
     os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
@@ -17,6 +18,9 @@ mydb = MySQLDatabase(
     host=os.getenv("MYSQL_HOST"),
     port=3306,
 )
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class BaseModel(Model):
     class Meta:
@@ -65,47 +69,59 @@ class TestRoutes(unittest.TestCase):
         }
 
     def test_hobbies_route(self):
-        get_response = self.client.get('/api/v1/hobbies', headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        post_response = self.client.post('/api/v1/hobbies', headers=self.headers, json={
-            "name": "Test",
-            "description": "Test",
-            "image": "Test"
-        }, content_type='application/json')
-        self.assertEqual(post_response.status_code, 200)
-        delete_response = self.client.delete('/api/v1/hobbies', headers=self.headers, json={
-            "name": "Test"
-        }, content_type='application/json')
-        self.assertEqual(delete_response.status_code, 200)
+        try:
+            get_response = self.client.get('/api/v1/hobbies', headers=self.headers)
+            self.assertEqual(get_response.status_code, 200)
+            post_response = self.client.post('/api/v1/hobbies', headers=self.headers, json={
+                "name": "Test",
+                "description": "Test",
+                "image": "Test"
+            }, content_type='application/json')
+            self.assertEqual(post_response.status_code, 200)
+            delete_response = self.client.delete('/api/v1/hobbies', headers=self.headers, json={
+                "name": "Test"
+            }, content_type='application/json')
+            self.assertEqual(delete_response.status_code, 200)
+        except requests.exceptions.RequestException as e:
+            logger.error("Error in test_hobbies_route: %s", e)
+            self.fail(f"test_hobbies_route failed: {e}")
 
     def test_projects_route(self):
-        get_response = self.client.get('/api/v1/projects', headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        post_response = self.client.post('/api/v1/projects', headers=self.headers, json={
-            "name": "Test",
-            "description": "Test",
-            "url": "Test",
-            "language": "Test"
-        }, content_type='application/json')
-        self.assertEqual(post_response.status_code, 200)
-        delete_response = self.client.delete('/api/v1/projects', headers=self.headers, json={
-            "name": "Test"
-        }, content_type='application/json')
-        self.assertEqual(delete_response.status_code, 200)
+        try:
+            get_response = self.client.get('/api/v1/projects', headers=self.headers)
+            self.assertEqual(get_response.status_code, 200)
+            post_response = self.client.post('/api/v1/projects', headers=self.headers, json={
+                "name": "Test",
+                "description": "Test",
+                "url": "Test",
+                "language": "Test"
+            }, content_type='application/json')
+            self.assertEqual(post_response.status_code, 200)
+            delete_response = self.client.delete('/api/v1/projects', headers=self.headers, json={
+                "name": "Test"
+            }, content_type='application/json')
+            self.assertEqual(delete_response.status_code, 200)
+        except requests.exceptions.RequestException as e:
+            logger.error("Error in test_projects_route: %s", e)
+            self.fail(f"test_projects_route failed: {e}")
 
     def test_timeline_route(self):
-        get_response = self.client.get('/api/v1/timeline', headers=self.headers)
-        self.assertEqual(get_response.status_code, 200)
-        post_response = self.client.post('/api/v1/timeline', headers=self.headers, json={
-            "title": "Test",
-            "description": "Test",
-            "date": "2021-01-01"
-        }, content_type='application/json')
-        self.assertEqual(post_response.status_code, 200)
-        delete_response = self.client.delete('/api/v1/timeline', headers=self.headers, json={
-            "title": "Test"
-        }, content_type='application/json')
-        self.assertEqual(delete_response.status_code, 200)
+        try:
+            get_response = self.client.get('/api/v1/timeline', headers=self.headers)
+            self.assertEqual(get_response.status_code, 200)
+            post_response = self.client.post('/api/v1/timeline', headers=self.headers, json={
+                "title": "Test",
+                "description": "Test",
+                "date": "2021-01-01"
+            }, content_type='application/json')
+            self.assertEqual(post_response.status_code, 200)
+            delete_response = self.client.delete('/api/v1/timeline', headers=self.headers, json={
+                "title": "Test"
+            }, content_type='application/json')
+            self.assertEqual(delete_response.status_code, 200)
+        except requests.exceptions.RequestException as e:
+            logger.error("Error in test_timeline_route: %s", e)
+            self.fail(f"test_timeline_route failed: {e}")
 
 if __name__ == '__main__':
     unittest.main()
