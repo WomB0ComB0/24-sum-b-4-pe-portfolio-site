@@ -3,7 +3,7 @@ import os
 import datetime
 import importlib.metadata
 import logging
-from peewee import MySQLDatabase, Model, CharField, TextField, DateTimeField
+from peewee import MySQLDatabase, Model, CharField, TextField, DateTimeField, DatabaseError
 from portfolio import create_app
 from dotenv import load_dotenv
 import requests
@@ -51,10 +51,22 @@ class TimelineModel(BaseModel):
 class TestRoutes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = create_app()
-        cls.client = cls.app.test_client()
-        mydb.connect()
-        mydb.create_tables([HobbiesModel, ProjectsModel, TimelineModel])
+        try:
+            logger.debug("Setting up class")
+            cls.app = create_app()
+            cls.client = cls.app.test_client()
+            try:
+                mydb.connect()
+                mydb.create_tables([HobbiesModel, ProjectsModel, TimelineModel])
+            except DatabaseError as e:
+                logger.error("Database error in setUpClass: %s", e)
+                raise e
+            except Exception as e:
+                logger.error("Unexpected error in setUpClass: %s", e)
+                raise e
+        except Exception as e:
+            logger.error("Error in setUpClass: %s", e)
+            raise e
 
     @classmethod
     def tearDownClass(cls):
