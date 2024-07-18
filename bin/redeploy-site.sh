@@ -158,8 +158,11 @@ stop_flask_server() {
 }
 
 run_tests() {
+    mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to create database ${TEST_MYSQL_DATABASE}"
+    mysql -h 127.0.0.1 -uroot -proot -e "USE ${TEST_MYSQL_DATABASE};" || echo "Failed to use database ${TEST_MYSQL_DATABASE}"
     output=$(python -m unittest discover -s tests/unit -p "test_*.py" 2>&1)
     exit_code=$?
+    mysql -h 127.0.0.1 -uroot -proot -e "DROP DATABASE IF EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to drop database ${TEST_MYSQL_DATABASE}"
 
     # Check if the tests passed or failed
     if [ $exit_code -eq 0 ]; then
