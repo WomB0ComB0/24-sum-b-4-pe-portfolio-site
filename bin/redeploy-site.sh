@@ -64,18 +64,18 @@ check_mysql() {
     fi
 
     # Ensure MySQL user has the necessary permissions
-    mysql -u root -p"${MYSQL_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-    mysql -u root -p"${MYSQL_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
-    mysql -u root -p"${MYSQL_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${TEST_MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
-    mysql -u root -p"${MYSQL_PASSWORD}" -e "FLUSH PRIVILEGES;"
+    mysql -u root -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON ${TEST_MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'localhost';"
+    mysql -u root -e "FLUSH PRIVILEGES;"
 
     # Select the database
-    mysql -u root -p"${MYSQL_PASSWORD}" -e "USE ${MYSQL_DATABASE};"
+    mysql -u root -e "USE ${MYSQL_DATABASE};"
 
     # Create tables
-    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
-    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
-    mysql -u root -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS hobbies (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, image VARCHAR(255));"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS projects (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, url VARCHAR(255), language VARCHAR(255));"
+    mysql -u root -D ${MYSQL_DATABASE} -e "CREATE TABLE IF NOT EXISTS timeline (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, date DATE);"
 }
 
 clean_environment() {
@@ -158,11 +158,11 @@ stop_flask_server() {
 }
 
 run_tests() {
-    mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to create database ${TEST_MYSQL_DATABASE}"
-    mysql -h 127.0.0.1 -uroot -proot -e "USE ${TEST_MYSQL_DATABASE};" || echo "Failed to use database ${TEST_MYSQL_DATABASE}"
+    mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to create database ${TEST_MYSQL_DATABASE}"
+    mysql -h 127.0.0.1 -u root -e "USE ${TEST_MYSQL_DATABASE};" || echo "Failed to use database ${TEST_MYSQL_DATABASE}"
     output=$(python -m unittest discover -s tests/unit -p "test_*.py" 2>&1)
     exit_code=$?
-    mysql -h 127.0.0.1 -uroot -proot -e "DROP DATABASE IF EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to drop database ${TEST_MYSQL_DATABASE}"
+    mysql -h 127.0.0.1 -u root -e "DROP DATABASE IF EXISTS ${TEST_MYSQL_DATABASE};" || echo "Failed to drop database ${TEST_MYSQL_DATABASE}"
 
     # Check if the tests passed or failed
     if [ $exit_code -eq 0 ]; then
