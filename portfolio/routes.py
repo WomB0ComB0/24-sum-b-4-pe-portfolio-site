@@ -2,11 +2,13 @@ from typing import List, Dict
 import os
 import requests
 from dotenv import load_dotenv
-from flask import request, jsonify, render_template, current_app as app
+from flask import request, jsonify, render_template, current_app as app, g
 from portfolio.schemas import SchemaType
 from portfolio.utils import ContactForm, JsonReader
 from portfolio.auth import check_authentication
 from portfolio.mysql_db import Projects, Hobbies, Timeline
+from portfolio.schemas import EducationSchema, PlacesSchema, WorkSchema, AboutSchema
+from portfolio.db import Database
 from pydantic import ValidationError
 from peewee import DatabaseError
 import logging
@@ -14,6 +16,70 @@ import logging
 load_dotenv()
 base_path = os.path.dirname(os.path.abspath(__file__))
 root_path = os.path.dirname(base_path)
+
+
+def get_db():
+    if "db" not in g:
+        g.db = Database(os.path.join(root_path, "portfolio.db"))
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(_error):
+    try:
+        print("Closing database connection")
+        db = g.pop("db", None)
+        if db is not None:
+            db.close_connection()
+    except Exception as e:
+        print(f"Error closing database connection: {e}")
+        raise e
+
+
+connect = get_db()
+connect.create_table(
+    "education",
+    EducationSchema(
+        institution="",
+        degree="",
+        startDate="",
+        endDate="",
+        logo="",
+        description="",
+        skills="",
+    ).json(),
+)
+connect.create_table(
+    "places",
+    PlacesSchema(
+        name="",
+        description="",
+        lat="",
+        lng="",
+    ).json(),
+)
+
+connect.create_table(
+    "work",
+    WorkSchema(
+        logo="",
+        company="",
+        title="",
+        type="",
+        location="",
+        startDate="",
+        endDate="",
+        description="",
+    ).json(),
+)
+
+connect.create_table(
+    "about",
+    AboutSchema(
+        description=JsonReader("static/json/about.json").read_data()["about"]["description"],
+        image=JsonReader("static/json/about.json").read_data()["about"]["image"],
+    ).json(),
+)
 
 nav_menu: List[Dict[str, str]] = [
     {"name": "Home", "url": "/"},
@@ -32,6 +98,7 @@ def active_menu(menu: List[Dict[str, str]], url: str) -> str:
             item["active"] = False
     return menu
 
+
 @app.route("/", methods=["GET", "OPTIONS"])
 def index():
     menu = active_menu(nav_menu, request.url)
@@ -41,8 +108,7 @@ def index():
     places_data = JsonReader("static/json/places.json").read_data()["places"]
     educations = JsonReader("static/json/education.json").read_data()["education"]
     work_experiences = JsonReader("static/json/work.json").read_data()["work"]
-    about = JsonReader("static/json/about.json").read_data()["about"]
-
+    
     return render_template(
         "landing.jinja2",
         url=os.getenv("URL"),
@@ -178,28 +244,37 @@ def api_projects() -> str:
     elif request.method == "PUT":
         try:
             data: dict = request.json
-            if 'name' in data:
+            if "name" in data:
                 Projects.update(**data).where(Projects.name == data["name"]).execute()
                 return jsonify({"message": "Project updated successfully"})
             else:
-                return jsonify({"error": "Name key is missing in the request data"}), 400
+                return (
+                    jsonify({"error": "Name key is missing in the request data"}),
+                    400,
+                )
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "DELETE":
         try:
             data: dict = request.json
-            if 'name' in data:
+            if "name" in data:
                 Projects.delete().where(Projects.name == data["name"]).execute()
                 return jsonify({"message": "Project deleted successfully"})
             else:
-                return jsonify({"error": "Name key is missing in the request data"}), 400
+                return (
+                    jsonify({"error": "Name key is missing in the request data"}),
+                    400,
+                )
         except DatabaseError as e:
             return jsonify({"error": str(e)}), 500
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
 
 
-@app.route(f"/api/v1/{SchemaType.HOBBIES.value}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+@app.route(
+    f"/api/v1/{SchemaType.HOBBIES.value}",
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+)
 @check_authentication
 def api_hobbies() -> str:
     if request.method == "GET":
@@ -207,16 +282,17 @@ def api_hobbies() -> str:
     elif request.method == "POST":
         return handle_post_hobbies()
     elif request.method == "DELETE":
-        return handle_delete_hobby()
+        return handle_delete_hobby(id=1)
     elif request.method == "OPTIONS":
         return jsonify({"message": "GET, POST, PUT, DELETE, OPTIONS"})
     else:
         return jsonify({"error": "Method not allowed"}), 405
 
+
 def handle_delete_hobby():
     data = request.get_json()
-    if 'name' in data:
-        hobby = Hobbies.get_or_none(Hobbies.name == data['name'])
+    if "name" in data:
+        hobby = Hobbies.get_or_none(Hobbies.name == data["name"])
         if hobby:
             hobby.delete_instance()
             return jsonify({"message": "Hobby deleted successfully"})
@@ -226,7 +302,10 @@ def handle_delete_hobby():
         return jsonify({"error": "Name key is missing in the request data"}), 400
 
 
-@app.route(f"/api/v1/{SchemaType.HOBBIES.value}/<int:id>", methods=["GET", "PUT", "DELETE", "OPTIONS"])
+@app.route(
+    f"/api/v1/{SchemaType.HOBBIES.value}/<int:id>",
+    methods=["GET", "PUT", "DELETE", "OPTIONS"],
+)
 @check_authentication
 def api_hobbies_id(id: int) -> str:
     if request.method == "PUT":
@@ -266,7 +345,7 @@ def handle_put_hobby(id: int):
     try:
         data: dict = request.json
         logger.debug("PUT data: %s", data)
-        if 'name' in data:
+        if "name" in data:
             Hobbies.update(**data).where(Hobbies.id == id).execute()
             return jsonify({"message": "Hobby updated successfully"})
         else:
@@ -285,7 +364,10 @@ def handle_delete_hobby(id: int):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route(f"/api/v1/{SchemaType.TIMELINE.value}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+@app.route(
+    f"/api/v1/{SchemaType.TIMELINE.value}",
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+)
 @check_authentication
 def api_timeline() -> str:
     if request.method == "GET":
@@ -302,7 +384,9 @@ def api_timeline() -> str:
 
 def handle_get_timeline():
     try:
-        timeline_data: list[Timeline] = list(Timeline.select().order_by(Timeline.date.desc()))
+        timeline_data: list[Timeline] = list(
+            Timeline.select().order_by(Timeline.date.desc())
+        )
         timeline_list = [item.__data__ for item in timeline_data]
         return jsonify({"timeline": timeline_list})
     except DatabaseError as e:
@@ -343,7 +427,7 @@ def handle_put_timeline():
 def handle_delete_timeline():
     try:
         data: dict = request.json
-        if 'title' in data:
+        if "title" in data:
             Timeline.delete().where(Timeline.title == data["title"]).execute()
             return jsonify({"message": "Timeline deleted successfully"})
         else:
@@ -351,5 +435,6 @@ def handle_delete_timeline():
     except DatabaseError as e:
         logger.error("Database error on DELETE: %s", e)
         return jsonify({"error": str(e)}), 500
+
 
 logger = logging.getLogger(__name__)

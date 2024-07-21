@@ -7,6 +7,7 @@ from typing import List, Dict, Any, Callable, Tuple
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
 from functools import wraps, cache
 
+
 class DataReader:
     def __init__(self, filename: str) -> None:
         self.filename = filename
@@ -51,7 +52,7 @@ class JsonReader(DataReader):
 
 
 class Processor:
-    def __init__(self, data_reader: DataReader) -> None :
+    def __init__(self, data_reader: DataReader) -> None:
         self.data_reader = data_reader
 
     def process(self) -> List[Dict[str, str]]:
@@ -68,23 +69,34 @@ class Memoize:
         if args not in self.cache:
             self.cache[args] = self.func(*args, **kwargs)
         return self.cache[args]
+
     def memory_allocated(self) -> int:
         return sys.getsizeof(self.cache)
+
     def memory_allocated_in_mb(self) -> int:
         return self.memory_allocated() / 1024 / 1024
+
     def memory_allocated_for_args(self, args: Tuple[Any, ...]) -> int:
         return sys.getsizeof(args)
+
     def memory_allocated_for_args_in_mb(self, args: Tuple[Any, ...]) -> int:
         return self.memory_allocated_for_args(args) / 1024 / 1024
-    def memory_allocated_loop(self, func: Callable, args: Tuple[Any, ...], iterations: int) -> int:
+
+    def memory_allocated_loop(
+        self, func: Callable, args: Tuple[Any, ...], iterations: int
+    ) -> int:
         return sys.getsizeof(func(*args) for _ in range(iterations))
-    def memory_allocated_loop_in_mb(self, func: Callable, args: Tuple[Any, ...], iterations: int) -> int:
+
+    def memory_allocated_loop_in_mb(
+        self, func: Callable, args: Tuple[Any, ...], iterations: int
+    ) -> int:
         return self.memory_allocated_loop(func, args, iterations) / 1024 / 1024
-    
+
     def clear_cache(self) -> str:
         cache_size = self.memory_allocated()
         self.cache = {}
         return f"Cleared cache. Memory allocated: {cache_size} bytes"
+
 
 class ContactForm(BaseModel):
     name: str
