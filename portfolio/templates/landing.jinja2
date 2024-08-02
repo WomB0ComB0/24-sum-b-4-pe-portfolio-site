@@ -2,13 +2,7 @@
 
 {% block main %}
 <header class="text-white max-w-[1556px] mx-auto rounded-lg">
-    <picture
-        class="
-            h-[300px]
-            w-[100dvw]
-            rounded-lg
-        "
-    >   
+    <picture class="h-[300px] w-[100dvw] rounded-lg">   
         <source srcset="{{ url_for('static', filename='pwa/opengraph-image.png') }}" type="image/png">
         <img src="{{ url_for('static', filename='pwa/opengraph-image.png') }}" alt="Your Photo" class="mt-4 w-full h-full rounded-lg">
     </picture>
