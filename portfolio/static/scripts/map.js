@@ -4,14 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map);
-
-  fetch('/static/json/places.json')
-    .then(response => response.json())
-    .then(data => {
-      data.places.forEach(place => {
-        var marker = L.marker([place.lat, place.lng]).addTo(map);
+  setTimeout(() => {
+    if (typeof places !== 'undefined' && Array.isArray(places)) {
+      places.forEach(place => {
+        var marker = L.marker([parseFloat(place.lat), parseFloat(place.lng)]).addTo(map);
         marker.bindPopup(`<h2 style='color:black;'>${place.name}</h2><h3 style='color:black;'>${place.description}</h3>`);
       });
-    })
-    .catch(error => console.error('Error loading places:', error));
+    }
+  }, 1000);
 });

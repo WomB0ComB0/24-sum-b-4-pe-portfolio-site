@@ -1,14 +1,19 @@
 from flask import Flask
+import os
 import logging
 from portfolio.db import mydb
-from portfolio.mysql_db import Hobbies, Projects, Timeline
+from portfolio.mysql_db import (
+    Hobbies,
+    Projects,
+    Timeline,
+)
 from peewee import DatabaseError
 
 
 def create_app():
     """Construct the core application."""
     app = Flask(__name__, template_folder="templates")
-
+    print(os.getenv("TEST"))
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

@@ -7,7 +7,6 @@ Jinja2==3.1.4
 MarkupSafe
 peewee==3.14.10
 pycparser==2.21
-PyMySQL==1.1.1
 python-dotenv==0.17.1
 Werkzeug
 requests==2.32.2
@@ -18,4 +17,6 @@ pytest
 pytest-flask
 pytest-mock
 requests-mock
-peewee==3.14.10
+Flask-Caching==2.3.0
+flask-swagger-ui==4.11.1
+PyMySQL==1.1.1

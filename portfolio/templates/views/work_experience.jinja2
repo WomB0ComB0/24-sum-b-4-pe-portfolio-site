@@ -1,22 +1,23 @@
 <section id="work-experience" class="p-6 rounded-lg">
     <h2 class="text-2xl font-semibold text-white">Work Experience</h2>
     <div class="work-experience-scroller mt-4 flex space-x-4 overflow-x-auto snap-x snap-mandatory">
-        {% for experience in work_experiences %}
-        <article class="work-card p-4 bg-white rounded-lg shadow-lg snap-start">
-            <header class="header flex items-center w-full mb-4 mx-auto">
+        {% for work in work_experiences %}
+        <article class="work-card bg-white rounded-lg shadow-lg snap-start p-4">
+            <header class="header flex items-center mb-4">
                 <picture class="mr-4 flex-shrink-0">
-                    <source srcset="{{ url_for('static', filename=experience.logo) }}" type="image/png">
-                    <img src="{{ url_for('static', filename=experience.logo) }}" alt="{{ experience.company }}" class="w-16 h-16 rounded-full">
+                    <source srcset="{{ url_for('static', filename=work.logo) }}" type="image/png">
+                    <img src="{{ url_for('static', filename=work.logo) }}" alt="{{ work.company }}" class="w-16 h-16 rounded-full">
                 </picture>
                 <div class="details text-center w-full">
-                    <h3 class="text-xl font-bold text-gray-900 w-full">{{ experience.title }}</h3>
-                    <p class="text-gray-600 w-full">{{ experience.company }}</p>
-                    <p class="text-gray-500 w-full">{{ experience.startDate }} - {{ experience.endDate }}</p>
+                    <h3 class="text-lg font-bold text-gray-900 w-full">{{ work.title }}</h3>
+                    <p class="text-gray-600 w-full">{{ work.company }}</p>
+                    <p class="text-gray-500 w-full">{{ work.startDate }} - {{ work.endDate }}</p>
+                    <p class="text-gray-500">{{ work.type }} | {{ work.location }}</p>
                 </div>
             </header>
             <ul class="list-disc pl-5 text-gray-700">
-                {% for desc in experience.description %}
-                <li>{{ desc }}</li>
+                {% for desc in work.description|format_description %}
+                    <li>{{ desc }}</li>
                 {% endfor %}
             </ul>
         </article>

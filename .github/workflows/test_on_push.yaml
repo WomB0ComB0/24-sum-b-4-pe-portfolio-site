@@ -99,6 +99,7 @@ jobs:
           FLASK_ENV: testing
           PYTHONPATH: ${{ github.workspace }}
           TOKEN: testing
+          TESTING: True
         run: |
           flask run --host=0.0.0.0 --port=5000 &
           while ! nc -z localhost 5000; do   

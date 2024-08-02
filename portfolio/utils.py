@@ -5,7 +5,7 @@ from flask import jsonify
 from pydantic import BaseModel, EmailStr
 from typing import List, Dict, Any, Callable, Tuple
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
-from functools import wraps, cache
+from portfolio.constants import StatusCodeLiteral
 
 
 class DataReader:
@@ -74,13 +74,13 @@ class Memoize:
         return sys.getsizeof(self.cache)
 
     def memory_allocated_in_mb(self) -> int:
-        return self.memory_allocated() / 1024 / 1024
+        return int(self.memory_allocated() / 1024 / 1024)
 
     def memory_allocated_for_args(self, args: Tuple[Any, ...]) -> int:
         return sys.getsizeof(args)
 
     def memory_allocated_for_args_in_mb(self, args: Tuple[Any, ...]) -> int:
-        return self.memory_allocated_for_args(args) / 1024 / 1024
+        return int(self.memory_allocated_for_args(args) / 1024 / 1024)
 
     def memory_allocated_loop(
         self, func: Callable, args: Tuple[Any, ...], iterations: int
@@ -90,7 +90,7 @@ class Memoize:
     def memory_allocated_loop_in_mb(
         self, func: Callable, args: Tuple[Any, ...], iterations: int
     ) -> int:
-        return self.memory_allocated_loop(func, args, iterations) / 1024 / 1024
+        return int(self.memory_allocated_loop(func, args, iterations) / 1024 / 1024)
 
     def clear_cache(self) -> str:
         cache_size = self.memory_allocated()
@@ -120,12 +120,13 @@ def post_function(
     body: Dict[str, str],
     json_body: Dict[str, List[Dict[str, str]]],
     schema_type: SchemaType,
-) -> str:
+) -> Tuple[str, StatusCodeLiteral]:
     try:
         validate_request_body(body, schema_type)
         json_body[schema_type.value].append(body)
         data_reader = JsonReader(f"static/json/{schema_type.value}.json")
         data_reader.write_data(json_body)
-
+        return "Success", 200
     except ValueError as e:
-        return jsonify({"message": str(e)}), 400
+        return str(e), 400
+    

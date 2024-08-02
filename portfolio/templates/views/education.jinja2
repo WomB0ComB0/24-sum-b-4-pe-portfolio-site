@@ -15,15 +15,17 @@
                 </div>
             </header>
             <ul class="education-description list-disc pl-5 text-gray-700">
-                {% for desc in education.description %}
-                <li>{{ desc }}</li>
+                {% for desc in education.description|format_description %}
+                    <li>{{ desc|clean_description }}</li>
                 {% endfor %}
             </ul>
-            <ul class="education-skills flex flex-wrap mt-2 space-x-2">
-                {% for skill in education.skills %}
-                <li class="bg-violet-400 text-violet-800 px-2 py-1 rounded">{{ skill }}</li>
-                {% endfor %}
-            </ul>
+            {% if education.skills %}
+                <ul class="education-skills flex flex-wrap mt-2 space-x-2">
+                    {% for skill in education.skills|format_description %}
+                        <li class="bg-violet-400 text-violet-8000 px-2 py-1 rounded">{{ skill|clean_description }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </article>
         {% endfor %}
     </div>
