@@ -3,7 +3,7 @@ import sqlite3
 import json
 import logging
 from flask import g
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional, Tuple
 from peewee import MySQLDatabase
 from dotenv import load_dotenv
 
@@ -26,7 +26,7 @@ class Database:
     def __init__(self, db_path: str):
         self.db_path = db_path
 
-    def get_connection(self):
+    def get_connection(self) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
         try:
             if "conn" not in g:
                 g.conn = sqlite3.connect(self.db_path)
@@ -37,8 +37,11 @@ class Database:
             raise
 
     def create_table(self, table_name: str, columns: Dict[str, str]) -> None:
+        conn: Optional[sqlite3.Connection] = None
+        cursor: Optional[sqlite3.Cursor] = None
         try:
             conn, cursor = self.get_connection()
+
             columns_dict = self.python_to_sql(columns)
             columns_dict["id"] = "INTEGER PRIMARY KEY AUTOINCREMENT"
             columns_str = ", ".join(
@@ -52,10 +55,13 @@ class Database:
             conn.commit()
         except sqlite3.Error as e:
             logger.error("Error creating table %s: %s", table_name, e)
-            conn.rollback()
+            if conn:
+                conn.rollback()
             raise
 
     def insert_data(self, table_name: str, data: Dict[str, Any]) -> None:
+        conn: Optional[sqlite3.Connection] = None
+        cursor: Optional[sqlite3.Cursor] = None
         try:
             conn, cursor = self.get_connection()
             logger.info("Inserting data into table: %s", table_name)
@@ -95,16 +101,23 @@ class Database:
             logger.info("Successfully inserted data into %s", table_name)
         except (sqlite3.Error, json.JSONDecodeError) as e:
             logger.error("Error inserting data into %s: %s", table_name, e)
-            conn.rollback()
+            if conn:
+                conn.rollback()
             raise
 
     def update_data(
         self,
         table_name: str,
-        where_condition: Dict[str, Any] = None,
-        data: Dict[str, Any] = None,
+        where_condition: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
         index: int = 1,
     ) -> None:
+        conn: Optional[sqlite3.Connection] = None
+        cursor: Optional[sqlite3.Cursor] = None
+        if where_condition is None:
+            raise ValueError("where_condition is required")
+        if data is None:
+            raise ValueError("data is required")
         try:
             conn, cursor = self.get_connection()
 
@@ -140,15 +153,20 @@ class Database:
             conn.commit()
         except sqlite3.Error as e:
             logger.error("Error updating data in %s: %s", table_name, e)
-            conn.rollback()
+            if conn:
+                conn.rollback()
             raise
 
     def read_data(
         self,
         table_name: str,
         columns: List[str],
-        where_condition: Dict[str, str] = None,
+        where_condition: Optional[Dict[str, str]] = None,
     ) -> List[Dict[str, Any]]:
+        conn: Optional[sqlite3.Connection] = None
+        cursor: Optional[sqlite3.Cursor] = None
+        if where_condition is None:
+            raise ValueError("where_condition is required")
         try:
             _, cursor = self.get_connection()
 
@@ -187,9 +205,13 @@ class Database:
             return [dict(zip(column_names, row)) for row in cursor.fetchall()]
         except sqlite3.Error as e:
             logger.error("Error reading data from %s: %s", table_name, e)
+            if conn:
+                conn.rollback()
             raise
 
     def delete_data(self, table_name: str, where_condition: Dict[str, str]) -> None:
+        conn: Optional[sqlite3.Connection] = None
+        cursor: Optional[sqlite3.Cursor] = None
         try:
             conn, cursor = self.get_connection()
             where_clause = " AND ".join(
@@ -200,12 +222,13 @@ class Database:
             conn.commit()
         except sqlite3.Error as e:
             logger.error("Error deleting data from %s: %s", table_name, e)
-            conn.rollback()
+            if conn:
+                conn.rollback()
             raise
 
     def close_connection(self) -> None:
         try:
-            conn = getattr(g, "conn", None)
+            conn: Optional[sqlite3.Connection] = getattr(g, "conn", None)
             if conn is not None:
                 conn.close()
         except sqlite3.Error as e:

@@ -18,6 +18,7 @@ load_dotenv(dotenv_path=".env")
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 class TestRoutes(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -87,7 +88,7 @@ class TestRoutes(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        os.environ["TEST"] = "False"        
+        os.environ["TEST"] = "False"
         with cls.app.app_context():
             if hasattr(g, "db"):
                 g.db.close_connection()
@@ -103,7 +104,11 @@ class TestRoutes(unittest.TestCase):
         try:
             logger.debug("Starting test_hobbies_route")
             get_response = self.client.get("/api/v1/hobbies", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
 
             post_data = {"name": "Test", "description": "Test", "image": "Test"}
@@ -113,7 +118,11 @@ class TestRoutes(unittest.TestCase):
                 json=post_data,
                 content_type="application/json",
             )
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
 
             get_after_post = self.client.get("/api/v1/hobbies", headers=self.headers)
@@ -135,7 +144,11 @@ class TestRoutes(unittest.TestCase):
         try:
             logger.debug("Starting test_projects_route")
             get_response = self.client.get("/api/v1/projects", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
 
             post_data = {
@@ -150,7 +163,11 @@ class TestRoutes(unittest.TestCase):
                 json=post_data,
                 content_type="application/json",
             )
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
 
             get_after_post = self.client.get("/api/v1/projects", headers=self.headers)
@@ -161,7 +178,11 @@ class TestRoutes(unittest.TestCase):
                 f"/api/v1/projects/{project_id}",
                 headers=self.headers,
             )
-            logger.debug("DELETE Response: %s, Content: %s", delete_response.status_code, delete_response.data)
+            logger.debug(
+                "DELETE Response: %s, Content: %s",
+                delete_response.status_code,
+                delete_response.data,
+            )
             self.assertEqual(delete_response.status_code, 200)
 
         except requests.exceptions.RequestException as e:
@@ -172,23 +193,54 @@ class TestRoutes(unittest.TestCase):
         try:
             logger.debug("Starting test_projects_range_deletion")
             post_data: List[Dict[str, Any]] = [
-                {"name": "Project 1", "description": "Description 1", "url": "url1", "language": "Python"},
-                {"name": "Project 2", "description": "Description 2", "url": "url2", "language": "JavaScript"},
-                {"name": "Project 3", "description": "Description 3", "url": "url3", "language": "Java"},
+                {
+                    "name": "Project 1",
+                    "description": "Description 1",
+                    "url": "url1",
+                    "language": "Python",
+                },
+                {
+                    "name": "Project 2",
+                    "description": "Description 2",
+                    "url": "url2",
+                    "language": "JavaScript",
+                },
+                {
+                    "name": "Project 3",
+                    "description": "Description 3",
+                    "url": "url3",
+                    "language": "Java",
+                },
             ]
-            post_response = self.client.post("/api/v1/projects", json=post_data, headers=self.headers)
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            post_response = self.client.post(
+                "/api/v1/projects", json=post_data, headers=self.headers
+            )
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
 
-            delete_response = self.client.delete("/api/v1/projects?start=1&end=2", headers=self.headers)
-            logger.debug("DELETE Response: %s, Content: %s", delete_response.status_code, delete_response.data)
+            delete_response = self.client.delete(
+                "/api/v1/projects?start=1&end=2", headers=self.headers
+            )
+            logger.debug(
+                "DELETE Response: %s, Content: %s",
+                delete_response.status_code,
+                delete_response.data,
+            )
             self.assertEqual(delete_response.status_code, 200)
             response_data = delete_response.get_json()
             self.assertIn("message", response_data)
             self.assertIn("2 projects deleted successfully", response_data["message"])
 
             get_response = self.client.get("/api/v1/projects", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
             projects = get_response.get_json()["projects"]
             self.assertEqual(len(projects), 1)
@@ -217,27 +269,45 @@ class TestRoutes(unittest.TestCase):
     #         self.assertIn("message", response_data)
     #         self.assertIn("2 hobbies deleted successfully", response_data["message"])
 
-            # get_response = self.client.get("/api/v1/hobbies", headers=self.headers)
-            # logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
-            # self.assertEqual(get_response.status_code, 200)
-            # hobbies = get_response.get_json()["hobbies"]
-            # self.assertEqual(len(hobbies), 1)
-            # self.assertEqual(hobbies[0]["name"], "Hobby 3")
+    # get_response = self.client.get("/api/v1/hobbies", headers=self.headers)
+    # logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+    # self.assertEqual(get_response.status_code, 200)
+    # hobbies = get_response.get_json()["hobbies"]
+    # self.assertEqual(len(hobbies), 1)
+    # self.assertEqual(hobbies[0]["name"], "Hobby 3")
 
-        # except requests.exceptions.RequestException as e:
-        #     logger.error("Error in test_hobbies_range_deletion: %s", e)
-        #     self.fail(f"test_hobbies_range_deletion failed: {e}")
+    # except requests.exceptions.RequestException as e:
+    #     logger.error("Error in test_hobbies_range_deletion: %s", e)
+    #     self.fail(f"test_hobbies_range_deletion failed: {e}")
 
     def test_timeline_range_deletion(self) -> None:
         try:
             logger.debug("Starting test_timeline_range_deletion")
             post_data: List[Dict[str, Any]] = [
-                {"title": "Event 1", "description": "Description 1", "date": "2023-01-01"},
-                {"title": "Event 2", "description": "Description 2", "date": "2023-02-01"},
-                {"title": "Event 3", "description": "Description 3", "date": "2023-03-01"},
+                {
+                    "title": "Event 1",
+                    "description": "Description 1",
+                    "date": "2023-01-01",
+                },
+                {
+                    "title": "Event 2",
+                    "description": "Description 2",
+                    "date": "2023-02-01",
+                },
+                {
+                    "title": "Event 3",
+                    "description": "Description 3",
+                    "date": "2023-03-01",
+                },
             ]
-            post_response = self.client.post("/api/v1/timeline", json=post_data, headers=self.headers)
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            post_response = self.client.post(
+                "/api/v1/timeline", json=post_data, headers=self.headers
+            )
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
 
             # delete_response = self.client.delete("/api/v1/timeline?start=1&end=2", headers=self.headers)
@@ -249,7 +319,11 @@ class TestRoutes(unittest.TestCase):
             # self.assertIn("2 timeline items deleted successfully", response_data["message"])
 
             get_response = self.client.get("/api/v1/timeline", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
             timeline_items = get_response.get_json()["timeline"]
             logger.error("Timeline items: %s", timeline_items)
@@ -264,7 +338,11 @@ class TestRoutes(unittest.TestCase):
         try:
             logger.debug("Starting test_timeline_route")
             get_response = self.client.get("/api/v1/timeline", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
 
             post_data = {"title": "Test", "description": "Test", "date": "2021-01-01"}
@@ -274,7 +352,11 @@ class TestRoutes(unittest.TestCase):
                 json=post_data,
                 content_type="application/json",
             )
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
 
             get_after_post = self.client.get("/api/v1/timeline", headers=self.headers)
@@ -296,7 +378,11 @@ class TestRoutes(unittest.TestCase):
         try:
             logger.debug("Starting test_landing_route")
             get_response = self.client.get("/api/v1/landing", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_response.status_code, get_response.data)
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_response.status_code,
+                get_response.data,
+            )
             self.assertEqual(get_response.status_code, 200)
             self.assertIn("data", get_response.get_json())
             self.assertIn("metadata", get_response.get_json())
@@ -342,18 +428,36 @@ class TestRoutes(unittest.TestCase):
                     }
                 ],
             }
-            post_response = self.client.post("/api/v1/landing", json=post_data, headers=self.headers)
-            logger.debug("POST Response: %s, Content: %s", post_response.status_code, post_response.data)
+            post_response = self.client.post(
+                "/api/v1/landing", json=post_data, headers=self.headers
+            )
+            logger.debug(
+                "POST Response: %s, Content: %s",
+                post_response.status_code,
+                post_response.data,
+            )
             self.assertEqual(post_response.status_code, 200)
             self.assertIn("message", post_response.get_json())
 
-            options_response = self.client.options("/api/v1/landing", headers=self.headers)
-            logger.debug("OPTIONS Response: %s, Content: %s", options_response.status_code, options_response.data)
+            options_response = self.client.options(
+                "/api/v1/landing", headers=self.headers
+            )
+            logger.debug(
+                "OPTIONS Response: %s, Content: %s",
+                options_response.status_code,
+                options_response.data,
+            )
             self.assertEqual(options_response.status_code, 200)
             self.assertIn("message", options_response.get_json())
 
-            get_id_response = self.client.get("/api/v1/landing/1?section=education", headers=self.headers)
-            logger.debug("GET Response: %s, Content: %s", get_id_response.status_code, get_id_response.data)
+            get_id_response = self.client.get(
+                "/api/v1/landing/1?section=education", headers=self.headers
+            )
+            logger.debug(
+                "GET Response: %s, Content: %s",
+                get_id_response.status_code,
+                get_id_response.data,
+            )
             self.assertEqual(get_id_response.status_code, 200)
             self.assertIn("education", get_id_response.get_json())
 
@@ -372,7 +476,11 @@ class TestRoutes(unittest.TestCase):
                 json=put_data,
                 headers=self.headers,
             )
-            logger.debug("PUT Response: %s, Content: %s", put_response.status_code, put_response.data)
+            logger.debug(
+                "PUT Response: %s, Content: %s",
+                put_response.status_code,
+                put_response.data,
+            )
             self.assertEqual(put_response.status_code, 200)
             self.assertIn("message", put_response.get_json())
 
@@ -381,8 +489,14 @@ class TestRoutes(unittest.TestCase):
             # self.assertEqual(delete_response.status_code, 200)
             # self.assertIn("message", delete_response.get_json())
 
-            options_id_response = self.client.options("/api/v1/landing/1", headers=self.headers)
-            logger.debug("OPTIONS Response: %s, Content: %s", options_id_response.status_code, options_id_response.data)
+            options_id_response = self.client.options(
+                "/api/v1/landing/1", headers=self.headers
+            )
+            logger.debug(
+                "OPTIONS Response: %s, Content: %s",
+                options_id_response.status_code,
+                options_id_response.data,
+            )
             self.assertEqual(options_id_response.status_code, 200)
             self.assertIn("message", options_id_response.get_json())
 

@@ -1,9 +1,10 @@
 import os
 import json
 import sys
+from abc import abstractmethod
 from flask import jsonify
 from pydantic import BaseModel, EmailStr
-from typing import List, Dict, Any, Callable, Tuple
+from typing import List, Dict, Any, Callable, Tuple, Union
 from portfolio.schemas import SchemaType, ProjectsSchema, HobbiesSchema
 from portfolio.constants import StatusCodeLiteral
 
@@ -12,9 +13,11 @@ class DataReader:
     def __init__(self, filename: str) -> None:
         self.filename = filename
 
+    @abstractmethod
     def read_data(self) -> List[Dict[str, str]]:
         pass
 
+    @abstractmethod
     def write_data(self, data: List[Dict[str, str]]) -> None:
         pass
 
@@ -27,38 +30,42 @@ class CsvReader(DataReader):
                 data.append(line.strip().split(","))
             return data
 
+    @abstractmethod
     def write_data(self, data: List[Dict[str, str]]) -> None:
         pass
 
 
 class JsonReader(DataReader):
-    def read_data(self) -> List[Dict[str, str]]:
+    def read_data(self) -> Union[List[Dict[str, str]], Tuple[str, StatusCodeLiteral]]:
         try:
             base_path = os.path.dirname(__file__)
             file_path = os.path.join(base_path, self.filename)
             with open(file_path, "r", encoding="utf-8") as file:
                 return json.load(file)
-        except FileNotFoundError:
-            return {"error": "File not found"}
+        except FileNotFoundError as e:
+            return jsonify({"error": str(e)}).get_data(as_text=True), 404
 
-    def write_data(self, data: List[Dict[str, str]]) -> None:
+    def write_data(
+        self, data: List[Dict[str, str]]
+    ) -> Union[Tuple[str, StatusCodeLiteral], None]:
         try:
             base_path = os.path.dirname(__file__)
             file_path = os.path.join(base_path, self.filename)
             with open(file_path, "w", encoding="utf-8") as file:
                 json.dump(data, file)
-        except FileNotFoundError:
-            return {"error": "File not found"}
+        except FileNotFoundError as e:
+            return jsonify({"error": str(e)}).get_data(as_text=True), 404
 
 
 class Processor:
     def __init__(self, data_reader: DataReader) -> None:
         self.data_reader = data_reader
 
-    def process(self) -> List[Dict[str, str]]:
+    def process(self) -> Union[List[Dict[str, str]], Tuple[str, StatusCodeLiteral]]:
         data = self.data_reader.read_data()
-        return data
-
+        if data:
+            return data
+        raise ValueError("Data not found")
 
 class Memoize:
     def __init__(self, func: Callable) -> None:
@@ -125,8 +132,7 @@ def post_function(
         validate_request_body(body, schema_type)
         json_body[schema_type.value].append(body)
         data_reader = JsonReader(f"static/json/{schema_type.value}.json")
-        data_reader.write_data(json_body)
-        return "Success", 200
+        data_reader.write_data(json_body[schema_type.value])
+        return jsonify({"message": "Success"}).get_data(as_text=True), 200
     except ValueError as e:
-        return str(e), 400
-    
+        return jsonify({"error": str(e)}).get_data(as_text=True), 400

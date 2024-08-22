@@ -38,28 +38,28 @@ class ProjectsSchema(Schema):
 
     def __name(self, name: str) -> str:
         if name is None:
-            return None
+            raise ValueError("Name cannot be None")
         if type(name) != str:
             raise ValueError("Name must be a string")
         return name
 
     def __description(self, description: str) -> str:
         if description is None:
-            return None
+            raise ValueError("Description cannot be None")
         if type(description) != str:
             raise ValueError("Description must be a string")
         return description
 
     def __url(self, url: str) -> str:
         if url is None:
-            return None
+            raise ValueError("Url cannot be None")
         if type(url) != str:
             raise ValueError("Url must be a string")
         return url
 
     def __language(self, language: str) -> str:
         if language is None:
-            return None
+            raise ValueError("Language cannot be None")
         if type(language) != str:
             raise ValueError("Language must be a string")
         return language
@@ -80,21 +80,21 @@ class HobbiesSchema(Schema):
 
     def __name(self, name: str) -> str:
         if name is None:
-            return None
+            raise ValueError("Name cannot be None")
         if type(name) != str:
             raise ValueError("Name must be a string")
         return name
 
     def __description(self, description: str) -> str:
         if description is None:
-            return None
+            raise ValueError("Description cannot be None")
         if type(description) != str:
             raise ValueError("Description must be a string")
         return description
 
     def __image(self, image: str) -> str:
         if image is None:
-            return None
+            raise ValueError("Image cannot be None")
         if type(image) != str:
             raise ValueError("Image must be a string")
         return image
@@ -115,21 +115,21 @@ class TimelineSchema(Schema):
 
     def __title(self, title: str) -> str:
         if title is None:
-            return None
+            raise ValueError("Title cannot be None")
         if type(title) != str:
             raise ValueError("Title must be a string")
         return title
 
     def __description(self, description: str) -> str:
         if description is None:
-            return None
+            raise ValueError("Description cannot be None")
         if type(description) != str:
             raise ValueError("Description must be a string")
         return description
 
     def __date(self, date: datetime) -> datetime:
         if date is None:
-            return None
+            raise ValueError("Date cannot be None")
         if type(date) != datetime:
             raise ValueError("Date must be a datetime")
         return date
@@ -145,7 +145,7 @@ class EducationSchema(Schema):
         logo: str,
         description: str,
         skills: str,
-        id: Optional[int] = None,
+        id: Optional[int] = None,  # type: ignore
     ) -> None:
         self.id = id
         self.institution = institution
@@ -158,6 +158,7 @@ class EducationSchema(Schema):
 
     def json(self) -> Dict[str, Any]:
         result = {
+            "id": self.id,
             "institution": self.institution,
             "degree": self.degree,
             "startDate": self.startDate,
@@ -188,6 +189,7 @@ class PlacesSchema(Schema):
 
     def json(self) -> Dict[str, Any]:
         result = {
+            "id": self.id,
             "name": self.name,
             "description": self.description,
             "lat": self.lat,
@@ -223,6 +225,7 @@ class WorkSchema(Schema):
 
     def json(self) -> Dict[str, Any]:
         result = {
+            "id": self.id,
             "logo": self.logo,
             "company": self.company,
             "title": self.title,
@@ -243,8 +246,9 @@ class AboutSchema(Schema):
         self.description = description
         self.image = image
 
-    def json(self) -> Dict[str, str]:
+    def json(self) -> Dict[str, Any]:
         result = {
+            "id": self.id,
             "description": self.description,
             "image": self.image,
         }
