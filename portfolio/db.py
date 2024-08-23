@@ -165,8 +165,6 @@ class Database:
     ) -> List[Dict[str, Any]]:
         conn: Optional[sqlite3.Connection] = None
         cursor: Optional[sqlite3.Cursor] = None
-        if where_condition is None:
-            raise ValueError("where_condition is required")
         try:
             _, cursor = self.get_connection()
 

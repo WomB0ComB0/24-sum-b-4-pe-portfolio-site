@@ -1,6 +1,8 @@
+import json
+from portfolio.mysql_db import Timeline, Hobbies, Projects
 from flask import request, jsonify
 from typing import Tuple, Type, Optional, List
-from peewee import Model, DatabaseError
+from peewee import Model, DatabaseError, DoesNotExist
 import logging
 
 from portfolio.constants import StatusCodeLiteral
@@ -25,7 +27,7 @@ class APIBase:
         try:
             item = cls.model.get_by_id(item_id)
             if item:
-                return jsonify(item).get_data(as_text=True), 200
+                return jsonify(item.__data__).get_data(as_text=True), 200
             else:
                 return jsonify({"error": "Item not found"}).get_data(as_text=True), 404
         except DatabaseError as e:
@@ -36,14 +38,63 @@ class APIBase:
     def create(cls) -> Tuple[str, StatusCodeLiteral]:
         try:
             data = request.get_json(force=True)
-            if not isinstance(data, dict):
+            logger.debug("POST Data: %s", data)
+
+            def get_expected_keys(model_name: str) -> dict:
+                match model_name:
+                    case "Timeline":
+                        return {
+                            "timeline_id": "<int>",
+                            "title": "<str>",
+                            "description": "<str>",
+                            "date": "<datetime>",
+                            "image": "<str>",
+                            "url": "<str>",
+                        }
+                    case "Hobbies":
+                        return {
+                            "hobbies_id": "<int>",
+                            "name": "<str>",
+                            "description": "<str>",
+                            "image": "<str>",
+                        }
+                    case "Projects":
+                        return {
+                            "projects_id": "<int>",
+                            "name": "<str>",
+                            "description": "<str>",
+                            "url": "<str>",
+                            "language": "<str>",
+                        }
+                    case _:
+                        return {}
+
+            if isinstance(data, list):
+                for item in data:
+                    if not isinstance(item, dict):
+                        expected_keys = get_expected_keys(cls.model.__name__)
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Invalid data format: expected {expected_keys}"
+                                }
+                            ).get_data(as_text=True),
+                            400,
+                        )
+                    cls.model.create(**item)
+            elif isinstance(data, dict):
+                cls.model.create(**data)
+            else:
+                expected_keys = get_expected_keys(cls.model.__name__)
                 return (
-                    jsonify({"error": "Invalid data format"}).get_data(as_text=True),
+                    jsonify(
+                        {"error": f"Invalid data format: expected {expected_keys}"}
+                    ).get_data(as_text=True),
                     400,
                 )
-            cls.model.create(**data)
+
             return (
-                jsonify({"message": "Item created successfully"}).get_data(
+                jsonify({"message": "Item(s) created successfully"}).get_data(
                     as_text=True
                 ),
                 201,
@@ -88,6 +139,7 @@ class APIBase:
 
     @classmethod
     def delete_range(cls) -> Tuple[str, StatusCodeLiteral]:
+        print(cls.model.__name__)
         try:
             start_string: Optional[str] = request.args.get("start")
             end_string: Optional[str] = request.args.get("end")
@@ -100,8 +152,8 @@ class APIBase:
                     400,
                 )
 
-            start: int = int(start_string) - 1 if start_string else 0
-            end: int = int(end_string) - 1 if end_string else 0
+            start: int = int(start_string) if start_string else 0
+            end: int = int(end_string) if end_string else 0
             deleted_count: int = 0
             errors: List[str] = []
 
@@ -111,6 +163,10 @@ class APIBase:
                     if item:
                         item.delete_instance()
                         deleted_count += 1
+                    else:
+                        errors.append(f"Item with id {i} not found")
+                except DoesNotExist as e:
+                    errors.append(f"Item with id {i} does not exist: {str(e)}")
                 except DatabaseError as e:
                     errors.append(f"Error deleting item with id {i}: {str(e)}")
 
@@ -134,10 +190,6 @@ class APIBase:
         except Exception as e:
             logger.error("Error in delete_range: %s", str(e))
             return jsonify({"error": str(e)}).get_data(as_text=True), 500
-
-
-from portfolio.mysql_db import Timeline, Hobbies, Projects
-
 
 class APITimeline(APIBase):
     model = Timeline

@@ -67,6 +67,7 @@ class Processor:
             return data
         raise ValueError("Data not found")
 
+
 class Memoize:
     def __init__(self, func: Callable) -> None:
         self.func = func

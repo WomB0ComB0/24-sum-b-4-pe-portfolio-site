@@ -6,9 +6,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 from dotenv import load_dotenv
-from flask import current_app as app, Blueprint
+from flask import current_app as app
 from flask import g, jsonify, render_template, request
-from peewee import DatabaseError
 from pydantic import ValidationError
 from flask_caching import Cache
 
@@ -51,9 +50,6 @@ def get_db() -> Database:
             )
         )
     return g.db
-
-
-api_bp = Blueprint("api", __name__)
 
 
 @app.teardown_appcontext  # type: ignore
@@ -190,7 +186,7 @@ def hobbies() -> str:
         headers={"Authorization": f"{os.getenv('TOKEN')}"},
     )
     response.raise_for_status()
-    hobbies_data = response.json()["hobbies"]
+    hobbies_data = response.json()
     return render_template(
         "pages/hobbies.jinja2",
         title="Hobbies",
@@ -213,7 +209,7 @@ def projects() -> str:
         headers={"Authorization": f"{os.getenv('TOKEN')}"},
     )
     response.raise_for_status()
-    projects_data = response.json()["projects"]
+    projects_data = response.json()
     return render_template(
         "pages/projects.jinja2",
         title="Projects",
@@ -240,7 +236,7 @@ def timeline() -> Tuple[str, StatusCodeLiteral]:
         print(response.json())
     else:
         print("Empty response")
-    timeline_data = response.json()["timeline"]
+    timeline_data = response.json()
     return (
         render_template(
             "pages/timeline.jinja2",
@@ -744,7 +740,7 @@ def handle_delete_landing_id(
         return jsonify({"error": str(e)}).get_data(as_text=True), 500
 
 
-@api_bp.route("/api/v1/timeline", methods=["GET", "POST", "DELETE"])
+@app.route("/api/v1/timeline", methods=["GET", "POST", "DELETE"])
 def timeline_api() -> Any:
     if request.method == "GET":
         return APITimeline.get_all()
@@ -754,7 +750,7 @@ def timeline_api() -> Any:
         return APITimeline.delete_range()
 
 
-@api_bp.route("/api/v1/timeline/<int:item_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/api/v1/timeline/<int:item_id>", methods=["GET", "PUT", "DELETE"])
 def timeline_id(item_id: int) -> Any:
     if request.method == "GET":
         return APITimeline.get_by_id(item_id)
@@ -764,7 +760,7 @@ def timeline_id(item_id: int) -> Any:
         return APITimeline.delete(item_id)
 
 
-@api_bp.route("/api/v1/projects", methods=["GET", "POST", "DELETE"])
+@app.route("/api/v1/projects", methods=["GET", "POST", "DELETE"])
 def projects_api() -> Any:
     if request.method == "GET":
         return APIProjects.get_all()
@@ -774,7 +770,7 @@ def projects_api() -> Any:
         return APIProjects.delete_range()
 
 
-@api_bp.route("/api/v1/projects/<int:item_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/api/v1/projects/<int:item_id>", methods=["GET", "PUT", "DELETE"])
 def projects_id(item_id: int) -> Any:
     if request.method == "GET":
         return APIProjects.get_by_id(item_id)
@@ -784,7 +780,7 @@ def projects_id(item_id: int) -> Any:
         return APIProjects.delete(item_id)
 
 
-@api_bp.route("/api/v1/hobbies", methods=["GET", "POST", "DELETE"])
+@app.route("/api/v1/hobbies", methods=["GET", "POST", "DELETE"])
 def hobbies_api() -> Any:
     if request.method == "GET":
         return APIHobbies.get_all()
@@ -794,7 +790,7 @@ def hobbies_api() -> Any:
         return APIHobbies.delete_range()
 
 
-@api_bp.route("/api/v1/hobbies/<int:item_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/api/v1/hobbies/<int:item_id>", methods=["GET", "PUT", "DELETE"])
 def hobbies_id(item_id: int) -> Any:
     if request.method == "GET":
         return APIHobbies.get_by_id(item_id)
