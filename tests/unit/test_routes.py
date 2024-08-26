@@ -8,6 +8,10 @@ from flask import g
 import sqlite3
 from typing import Dict, Any, List, Never
 
+print(
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+)
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 from portfolio import create_app
@@ -172,6 +176,7 @@ class TestRoutes(unittest.TestCase):
         except requests.exceptions.RequestException as e:
             logger.error("Error in test_%s_route: %s", name, e)
             self.fail(f"test_%s_route failed: {e}")
+
     def test_range(self, name: str, body: Any) -> None:
         try:
             logger.debug(f"Starting test_{name}_range_deletion")
@@ -207,6 +212,7 @@ class TestRoutes(unittest.TestCase):
             )
             self.assertEqual(delete_respnse.status_code, 200)
             response_data = delete_respnse.get_json()
+
             logger.error("Response data: %s", response_data)
             logger.debug("Response data: %s", response_data)
             self.assertIn("3 items deleted successfully", response_data["message"])
@@ -231,6 +237,93 @@ class TestRoutes(unittest.TestCase):
         except requests.exceptions.RequestException as e:
             logger.error(f"Error in test_{name}_range_deletion: {e}")
             self.fail(f"test_{name}_range_deletion: {e}")
+
+        def mysql_routes(self) -> None:
+            projects =
+            self.test_regular(
+                name='projects',
+                body=
+                    [
+                        {
+                            "project_id": 1,
+                            "name": "test 1",
+                            "description": "description 1",
+                            "url": "example.com",
+                            "language": "Java,Python,JavaScript"
+                        },
+                        {
+                            "project_id": 2,
+                            "name": "test 2",
+                            "description": "description 2",
+                            "url": "example.com",
+                            "language": "Java,Python,JavaScript"
+                        },
+                        {
+                            "project_id": 3,
+                            "name": "test 3",
+                            "description": "description 3",
+                            "url": "example.com",
+                            "language": "Java,Python,JavaScript"
+                        }
+                    ]
+                )
+            hobbies =
+            self.test_regular(
+                name='hobbies',
+                body=
+                    [
+                        {
+                            "hobbies_id": 1,
+                            "name": "test 1",
+                            "description": "description 1",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512"
+                        },
+                        {
+                            "hobbies_id": 2,
+                            "name": "test 2",
+                            "description": "description 2",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512"
+                        },
+                        {
+                            "hobbies_id": 3,
+                            "name": "test 3",
+                            "description": "description 3",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512"
+                        }
+                    ]
+                )
+            timeline =
+            self.test_regular(
+                name='timeline',
+                body=
+                    [
+                        {
+                            "timeline_id": 1,
+                            "title": "test 1",
+                            "description": "description 1",
+                            "date": "2024-01-01",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512",
+                            "url": "example.com"
+                        },
+                        {
+                            "timeline_id": 2,
+                            "title": "test 2",
+                            "description": "description 2",
+                            "date": "2024-01-01",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512",
+                            "url": "example.com"
+                        },
+                        {
+                            "timeline_id": 3,
+                            "title": "test 3",
+                            "description": "description 3",
+                            "date": "2024-01-01",
+                            "image": "https://github.com/WomB0ComB0.png?width=512&height=512",
+                            "url": "example.com"
+                        }
+                    ]
+                )
+    def mysql_range_routes(self) -> None:
 
     def test_landing_route(self) -> None:
         try:
