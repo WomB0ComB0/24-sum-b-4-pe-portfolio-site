@@ -1,4 +1,12 @@
-from peewee import Model, CharField, TextField, DateTimeField, SQL, PrimaryKeyField
+from peewee import (
+    Model,
+    CharField,
+    TextField,
+    DateTimeField,
+    SQL,
+    AutoField,
+    IntegerField,
+)
 from portfolio.db import mydb
 
 
@@ -13,22 +21,28 @@ class BaseModel(Model):
 
 
 class Hobbies(BaseModel):
-    hobbies_id = PrimaryKeyField()
+    id = AutoField(primary_key=True)
+    hobbies_id = IntegerField(unique=True)  # Change this line
     name = CharField()
     description = TextField()
     image = CharField()
 
 
 class Projects(BaseModel):
-    projects_id = PrimaryKeyField()
+    id = AutoField(primary_key=True)
+    projects_id = IntegerField(unique=True)  # Change this line
     name = CharField()
     description = TextField()
     url = CharField()
     language = CharField()
 
 
-class Timeline(BaseModel):
-    timeline_id = PrimaryKeyField()
+class Timeline(Model):
+    id = AutoField(primary_key=True)
+    timeline_id = IntegerField(unique=True)
     title = CharField()
     description = TextField()
     date = DateTimeField()
+
+    class Meta:
+        database = mydb

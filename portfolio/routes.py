@@ -402,30 +402,16 @@ def handle_get_landing(db: Database) -> Tuple[str, StatusCodeLiteral]:
 
 def handle_get_landing_id(db: Database, item_id: int) -> Tuple[str, StatusCodeLiteral]:
     try:
-        query_string: Optional[str] = request.args.get("section")
-        if query_string:
-            if query_string in columns:
-                result = db.read_data(query_string, columns[query_string])
-                if 0 <= item_id < len(result):
-                    return (
-                        jsonify({query_string: result[item_id]}).get_data(as_text=True),
-                        200,
-                    )
-                else:
-                    return (
-                        jsonify({"error": "Index out of range"}).get_data(as_text=True),
-                        404,
-                    )
-            else:
-                return jsonify({"error": "Invalid section"}).get_data(as_text=True), 400
-        else:
-            return (
-                jsonify({"error": "Section not specified"}).get_data(as_text=True),
-                400,
-            )
+        data = {}
+        for table in ["about", "education", "places", "work"]:
+            items = db.read_data(table, ["*"], {"id": str(item_id)})
+            if items:
+                data[table] = items[0]
+        if not data:
+            return jsonify({"error": "Item not found"}).get_data(as_text=True), 404
+        return jsonify(data).get_data(as_text=True), 200
     except Exception as e:
         logger.error("Error in handle_get_landing_id: %s", str(e))
-        logger.error(format("error: {}", str(e)))
         return jsonify({"error": str(e)}).get_data(as_text=True), 500
 
 

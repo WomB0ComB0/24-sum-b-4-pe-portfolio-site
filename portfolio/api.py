@@ -191,8 +191,46 @@ class APIBase:
             logger.error("Error in delete_range: %s", str(e))
             return jsonify({"error": str(e)}).get_data(as_text=True), 500
 
+
 class APITimeline(APIBase):
     model = Timeline
+
+    @classmethod
+    def create(cls):
+        try:
+            data = request.get_json(force=True)
+            required_fields = ["title", "description", "date"]
+            if not all(field in data for field in required_fields):
+                return jsonify({"error": "Missing required fields"}), 400
+
+            instance = cls.model.create(**data)
+            return (
+                jsonify(
+                    {"message": "Timeline item created successfully", "id": instance.id}
+                ),
+                201,
+            )
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    @classmethod
+    def delete_range(cls):
+        try:
+            start = request.args.get("start", type=int)
+            end = request.args.get("end", type=int)
+            if start is None or end is None:
+                return jsonify({"error": "Missing start or end parameter"}), 400
+            deleted = (
+                cls.model.delete()
+                .where(
+                    (cls.model.get_by_id(end) >= start)
+                    & (cls.model.get_by_id(start) <= end)
+                )
+                .execute()
+            )
+            return jsonify({"message": f"{deleted} items deleted successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
 
 class APIHobbies(APIBase):

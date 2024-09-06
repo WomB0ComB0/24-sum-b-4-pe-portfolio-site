@@ -43,7 +43,8 @@ class Database:
             conn, cursor = self.get_connection()
 
             columns_dict = self.python_to_sql(columns)
-            columns_dict["id"] = "INTEGER PRIMARY KEY AUTOINCREMENT"
+            if "id" not in columns_dict:
+                columns_dict["id"] = "INTEGER PRIMARY KEY AUTOINCREMENT"
             columns_str = ", ".join(
                 [
                     f"{column_name} {column_type}"
@@ -78,25 +79,34 @@ class Database:
                     f"Invalid data type. Expected dictionary, got {type(data)}"
                 )
 
-            cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-                (table_name,),
-            )
-            if not cursor.fetchone():
-                raise ValueError(f"Table {table_name} does not exist")
+            filtered_data = {k: v for k, v in data.items() if v is not None}
 
-            cursor.execute(f"PRAGMA table_info({table_name})")
-            columns = [column[1] for column in cursor.fetchall()]
+            if "id" in data and data["id"] is not None:
+                cursor.execute(
+                    f"SELECT id FROM {table_name} WHERE id = ?", (data["id"],)
+                )
+                if cursor.fetchone():
+                    set_clause = ", ".join(
+                        [f"{k} = ?" for k in filtered_data.keys() if k != "id"]
+                    )
+                    query = f"UPDATE {table_name} SET {set_clause} WHERE id = ?"
+                    values = tuple(v for k, v in filtered_data.items() if k != "id") + (
+                        data["id"],
+                    )
+                else:
+                    columns_str = ", ".join(filtered_data.keys())
+                    placeholders = ", ".join(["?" for _ in filtered_data])
+                    query = f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders})"
+                    values = tuple(filtered_data.values())
+            else:
+                columns_str = ", ".join(filtered_data.keys())
+                placeholders = ", ".join(["?" for _ in filtered_data])
+                query = (
+                    f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders})"
+                )
+                values = tuple(filtered_data.values())
 
-            filtered_data = {k: v for k, v in data.items() if k in columns}
-            if not filtered_data:
-                raise ValueError(f"No valid columns found for table {table_name}")
-
-            columns_str = ", ".join(filtered_data.keys())
-            placeholders = ", ".join(["?" for _ in filtered_data])
-            query = f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders})"
-
-            cursor.execute(query, tuple(filtered_data.values()))
+            cursor.execute(query, values)
             conn.commit()
             logger.info("Successfully inserted data into %s", table_name)
         except (sqlite3.Error, json.JSONDecodeError) as e:
