@@ -27,7 +27,8 @@ RUN adduser \
 COPY requirements.txt .
 
 # Install dependencies
-RUN apt-get update && apt-get install -y build-essential libffi-dev
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y build-essential libffi-dev
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
