@@ -9,7 +9,7 @@ peewee==3.14.10
 pycparser==2.21
 python-dotenv==0.17.1
 Werkzeug
-requests==2.32.2
+requests==2.33.0
 db-sqlite3
 pydantic
 pydantic[email]
