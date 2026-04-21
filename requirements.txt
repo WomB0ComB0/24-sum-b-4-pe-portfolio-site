@@ -7,7 +7,7 @@ Jinja2==3.1.4
 MarkupSafe
 peewee==3.14.10
 pycparser==2.21
-python-dotenv==0.17.1
+python-dotenv==1.2.2
 Werkzeug
 requests==2.32.2
 db-sqlite3
